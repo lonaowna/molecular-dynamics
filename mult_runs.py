@@ -1,4 +1,4 @@
-import argon_Ludwig_cut_off as argon_Ludwig
+import argon
 import math
 import numpy
 import scipy.stats
@@ -10,7 +10,7 @@ from numba import jit
 import pickle
 #from astropy.table import Table, Column
 
-rhos = [0.88]
+rhos = [0.9]
 
 cvd = [] # The d`s mean these are arrays for the dictionary
 Pd = []
@@ -21,7 +21,7 @@ U_potd = []
 
 for i in range(0,1):
 
-	T = 1.0
+	T = 0.8
 	rho = rhos[i]
 	num_particles = 864
 	n_iter = 1000
@@ -34,10 +34,11 @@ for i in range(0,1):
 	N = num_particles
 	a = 1 #How many times to iterate over one rho
 	L = (num_particles/rho)**(1/3)
-	rcut = 3.2
-	rrms = 0
-
-	rmax = rcut+rrms
+	v_rms = math.sqrt(T)
+	r_v = 2.5
+	#r_m = r_v + v_rms*n_iter_cut*dt
+	r_m = 3.5
+	print("r_v=",r_v," r_m=",r_m)
 
 	# def make_table(vardict):
 	#     a = vardict['rho']
@@ -52,7 +53,7 @@ for i in range(0,1):
 	#     return
 
 	def storvar(vardict):
-		f = open('var_comp_rho{0}_T{1}_rmax{2}_test2.txt'.format(rho, T, rmax), 'wb')
+		f = open('var_comp_rho{0}_T{1}_rmax{2}_test2.txt'.format(rho, T, r_m), 'wb')
 		pickle.dump(vardict,f,)
 		f.close()
 		return
@@ -96,7 +97,7 @@ for i in range(0,1):
 
 	for j in range(0,a):
 
-		CvN, Pbeta, bins, Vtot, Ktot, Etot, Tcurrent, meandxlen, v_sum = argon_Ludwig.mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, rcut, rrms, n_iter_cut)
+		CvN, Pbeta, bins, Vtot, Ktot, Etot, Tcurrent, meandxlen, v_sum = argon.mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r_v, r_m, n_iter_cut)
 		cvd.append(CvN)
 		Pd.append(Pbeta)
 		difd.append(meandxlen[n_iter-1])

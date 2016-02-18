@@ -3,13 +3,12 @@ import numpy
 import scipy.stats
 import random
 import time
-# import anim_md
 import matplotlib.pyplot as plt
 from numba import jit
 numpy.set_printoptions(threshold=numpy.nan)
 
 
-def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, rcut, rrms, n_iter_cut):
+def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r_v, r_m, n_iter_cut):
 
 
     L = (num_particles/rho)**(1/3)
@@ -66,13 +65,16 @@ def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r
     @jit
     def lennard_jones(r):
         r2 = numpy.sum(r*r)
-        r6 = r2*r2*r2
-        r8 = r6*r2
-        r12 = r6*r6
-        r14 = r8*r6
-        Fij = r * 4 * ( 12*(1/r14) -6*(1/r8) )
-        Vij = 4 * ( (1/r12) - (1/r6) )
-        return Fij, Vij
+        if r2 > r_v*r_v:
+            return 0,0
+        else:
+            r6 = r2*r2*r2
+            r8 = r6*r2
+            r12 = r6*r6
+            r14 = r8*r6
+            Fij = r * 4 * ( 12*(1/r14) -6*(1/r8) )
+            Vij = 4 * ( (1/r12) - (1/r6) )
+            return Fij, Vij
 
     def lennard_jones_force_length(r):
         return 4 * ( 12*(1/r**13) - 6*(1/r**7) )
@@ -86,8 +88,7 @@ def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r
         return r
 
     @jit
-    def all_distance(x, N, L, rcut, rrms):
-        rmax = rcut + rrms
+    def all_distance(x, N, L, r_m):
         r_dis = numpy.zeros((N,N))
         
         for i in range(0, N):
@@ -95,14 +96,14 @@ def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r
                 r = closest_image_distance(x[:,i],x[:,j],L)
                 rij = numpy.sqrt(numpy.sum(r*r))
 
-                if rij < rmax:
+                if rij < r_m:
                     r_dis[i,j] += 1
                     r_dis[j,i] += 1
 
         return r_dis
                 
     @jit
-    def update_cut(N, L, x, v, a, dt, n_t, r_all):
+    def update(N, L, x, v, a, dt, n_t, r_all):
         Vtot = 0
         Ktot = 0
 
@@ -112,49 +113,15 @@ def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r
         a = numpy.zeros(shape=(3,N))
 
         for i in range(0, N):
-            k = numpy.nonzero(r_all[i,:])
-            m = k[0]
-            l = len(k[0])
-            for j in range(0,l):
-                f = int(m[j])
-                r = closest_image_distance(x[:,i],x[:,f],L)
-                # calculate force, potential
-                Fij, Vij = lennard_jones(r)
-                a[:,i] += Fij
-                Vtot += Vij/2
-
-        v += 0.5*a*dt
-
-        # make sure the particles stay in the box
-        for i in range(0, N):
-            c = numpy.rint(x[:,i]/L)
-            x[:,i] -= c*L
-            #calculate kinetic energy
-            Ktot += 0.5*numpy.sum(v[:,i]*v[:,i])
-
-        Etot = Vtot + Ktot
-        v_sum = numpy.sum(v,1)
-
-        return x,v,a,Vtot,Ktot,Etot,v_sum,dx
-
-    #@jit
-    def update(N, L, x, v, a, dt, n_t):
-        Vtot = 0
-        Ktot = 0
-
-        v += 0.5*a*dt
-        dx = v*dt
-        x += dx
-        a = numpy.zeros(shape=(3,N))
-
-        for i in range(0, N):
-            for j in range(i+1, N):
-                r = closest_image_distance(x[:,i],x[:,j],L)
-                # calculate force, potential
-                Fij, Vij = lennard_jones(r)
-                a[:,i] += Fij
-                a[:,j] -= Fij
-                Vtot += Vij
+            k = numpy.nonzero(r_all[i,:])[0]
+            for j in k: # only look at particles within the cutoff distance
+                if j > i: # only look at each pair once
+                    r = closest_image_distance(x[:,i],x[:,j],L)
+                    # calculate force, potential
+                    Fij, Vij = lennard_jones(r)
+                    a[:,i] += Fij
+                    a[:,j] -= Fij
+                    Vtot += Vij
 
         v += 0.5*a*dt
 
@@ -177,7 +144,7 @@ def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r
         return 3*N*Kmean2/(2*Kmean2-3*N*Kvar)
 
     @jit 
-    def pressure (N, T, x, v, a, rho, r_cut):
+    def pressure (N, T, x, v, a, rho, r_v):
         sum1 = 0
         for i in range (0, N) :
             for j in range (1+i, N): 
@@ -185,7 +152,7 @@ def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r
                     rlen = numpy.sqrt(numpy.sum(r*r))
                     Fmin = -lennard_jones(rlen)[0]
                     sum1 += rlen*Fmin#
-        P_comp = 1 - sum1/(3*N*T) + (2*math.pi*rho/(3*T))*(8*r_cut**(-3)-48/9*r_cut**(-9))#this is actually the compressibility factor
+        P_comp = 1 - sum1/(3*N*T) + (2*math.pi*rho/(3*T))*(8*r_v**(-3)-48/9*r_v**(-9))#this is actually the compressibility factor
         return P_comp
 
     @jit
@@ -216,13 +183,12 @@ def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r
         while i < n_iter:
             if i%n_iter_cut == 0:
                 t = time.time()
-                r_all = all_distance(x, N, L, rcut, rrms)
+                r_all = all_distance(x, N, L, r_m)
                 elapsed = time.time() - t
                 print("-------------------------------r_all function took",elapsed)
             print("iteration",i)
             t = time.time()
-            x, v, a, Vtot[i], Ktot[i], Etot[i], v_sum_vec, dx = update_cut(N, L, x, v, a, dt, n_t, r_all)
-            #x, v, a, Vtot[i], Ktot[i], Etot[i], v_sum_vec, dx = update(N, L, x, v, a, dt, n_t)
+            x, v, a, Vtot[i], Ktot[i], Etot[i], v_sum_vec, dx = update(N, L, x, v, a, dt, n_t, r_all)
             elapsed = time.time() - t
             print("update function took",elapsed)
             v_sum[i] = numpy.sqrt(numpy.sum(v_sum_vec*v_sum_vec))/N
@@ -233,27 +199,21 @@ def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r
                     #thermostat: scale velocity
                     labda = numpy.sqrt((N-1)*(3/2)*T/Ktot[i])
                     v *= labda
-            elif Tcurrent[i] > (1.1*T):
-                #thermostat: scale velocity
-                labda = numpy.sqrt((N-1)*(3/2)*T/Ktot[i])
-                v *= labda
-                totdx += dx
-                totdxlen = numpy.sqrt(numpy.sum(totdx*totdx,0))
-                meandxlen[i] = totdxlen.mean()
-            elif i%10 == 0:
-                #correlation bins
-                new_bins = spacial_corr(x,num_particles,L,bin_size,bin_count)
-                for j in range(0,bin_count):
-                    bins[j] += new_bins[j]
-                totdx += dx
-                totdxlen = numpy.sqrt(numpy.sum(totdx*totdx,0))
-                meandxlen[i] = totdxlen.mean()
-                i_bin += 1#amount of times binned to normalize
             else:
                 #diffusion length
                 totdx += dx
                 totdxlen = numpy.sqrt(numpy.sum(totdx*totdx,0))
                 meandxlen[i] = totdxlen.mean()
+                if math.fabs(Tcurrent[i]-T) > (0.1*T):
+                    #thermostat: scale velocity
+                    labda = numpy.sqrt((N-1)*(3/2)*T/Ktot[i])
+                    v *= labda
+                if i%10 == 0:
+                    #correlation bins
+                    new_bins = spacial_corr(x,num_particles,L,bin_size,bin_count)
+                    for j in range(0,bin_count):
+                        bins[j] += new_bins[j]
+                    i_bin += 1#amount of times binned to normalize
             i += 1
         
         print('i_bin= ',i_bin)
@@ -262,7 +222,7 @@ def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r
             bins[j] *= L*L*L/(N*(N-1))/(4*math.pi*((j+0.5)*bin_size)**2*bin_size)
         bins /= i_bin#divided by amount of times binned
 
-        P_beta = pressure (N, T, x, v, a, rho, rcut)
+        P_beta = pressure (N, T, x, v, a, rho, r_v)
         CvN = Cv(Ktot[n_iter_init:n_iter],N)/N
         
 
@@ -282,7 +242,7 @@ def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r
     #r_all = numpy.zeros((num_particles, num_particles))
 
     t_all = time.time()
-    r_all = all_distance(x, num_particles, L, rcut, rrms)
+    r_all = all_distance(x, num_particles, L, r_m)
     est = time.time()-t_all
     print('r_all took  ',est, 'seconds')
     #ascat = anim_md.AnimatedScatter(num_particles, L, x, v, a, dt, n_t, update)
