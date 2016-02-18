@@ -1,0 +1,125 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{lipsum}
+\usepackage{textcomp}
+\usepackage{fixltx2e}
+\usepackage{fancyhdr}
+\def\SPSB#1#2{\rlap{\textsuperscript{{#1}}}\SB{#2}}
+\def\SP#1{\textsuperscript{{#1}}}
+\def\SB#1{\textsubscript{{#1}}}
+\usepackage[svgnames]{xcolor}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\newcommand*{\rotrt}[1]{\rotatebox{90}{#1}} % Command to rotate right 90 degrees
+\newcommand*{\rotlft}[1]{\rotatebox{-90}{#1}} % Command to rotate left 90 degrees
+
+\newcommand*{\titleBC}{\begingroup % Create the command for including the title page in the document
+\centering % Center all text
+
+\def\CP{\textit{\Large Simulating argon }} % Title
+
+\settowidth{\unitlength}{\CP} % Set the width of the curly brackets to the width of the title
+{\color{CadetBlue}\resizebox*{\unitlength}{\baselineskip}{\rotrt{$\}$}}} \\[\baselineskip] % Print top curly bracket
+\textcolor{Black}{\CP} \\[\baselineskip] % Print title
+{\color{Grey}\large Delft University of Technology} \\ % Tagline or further description
+{\color{CadetBlue}\resizebox*{\unitlength}{\baselineskip}{\rotlft{$\}$}}} % Print bottom curly bracket
+
+\vfill % Whitespace between the title and the author name
+
+% Author name
+{\large\textbf{Ludwig Rasmijn}}\\
+{\large\textbf{Sebastiaan Lokhorst }}\\
+{\large\textbf{Shang-Jen Wang (4215974)}}\\
+\bigskip
+{\large\textbf{Supervisors:}}\\
+{\large\textbf{ }}
+\vfill % Whitespace between the author name and the publisher logo
+\pagestyle{empty}
+2015 % Year published
+
+\endgroup}
+
+\begin{document}
+\pagestyle{empty}
+\pagenumbering{gobble}
+\titleBC
+\newpage
+\begin{abstract}
+\noindent
+
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\newpage
+\pagestyle{fancy}
+% Clear the header and footer
+\fancyhead{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+% Set the right side of the footer to be the page number
+\fancyfoot[C]{\thepage}
+\pagenumbering{arabic}
+\listoffigures
+
+\chapter{Introduction}
+
+\chapter{Theory}
+Four questions have to be answered in order to simulate argon, these are:
+\begin{enumerate}
+ \item What is the interaction between the argon atoms?
+ \item How do the argon atoms move around?
+ \item What are the boundary conditions?
+ \item What are the initial conditions?
+\end{enumerate}
+These will be answered in the following sections.
+\section{Lennard-Jones potential}
+
+\section{Velocity Verlet}
+In this section the question ``How do the argon atoms move around?" will be answered.\\
+Newton's equation of motion can be used to describe the motion of argon:
+\begin{equation}\label{eq:newtonmotion}
+\boldsymbol{a}(t) \equiv \frac{d\boldsymbol{v}(t)}{dt}=\frac{d^2\boldsymbol{r}(t)}{dt^2}=\frac{\boldsymbol{F}(t)}{m}\text{.}
+\end{equation}
+The Verlet algorithm was used to solve this ODE and in particular the velocity Verlet algorithm. There are two reasons for using this algorithm. Firstly it has a high order of accuracy $\mathcal{O}(h^3)$ and secondly it is very stable. The derivation for the velocity Verlet algorithm is as follows:\\
+The Taylor expansions for the position:
+\begin{equation}\label{eq:position}
+\boldsymbol{r}(t+h) = \boldsymbol{r}(t) + h\frac{d\boldsymbol{r}(t)}{dt} + \frac{h^2}{2}\frac{d^2\boldsymbol{r}(t)}{dt^2}+\mathcal{O}(h^3)\text{.}
+\end{equation}
+Equation~(\ref{eq:position}) can be expressed in terms of velocity and force:
+\begin{equation}\label{eq:position2}
+\boldsymbol{r}(t+h) = \boldsymbol{r}(t) + h\boldsymbol{v}(t) + h^2\frac{\boldsymbol{F}(t)}{2m}+\mathcal{O}(h^3)\text{.}
+\end{equation}
+The Taylor expansion for velocity can be expressed as:
+\begin{equation}\label{eq:velocity}
+\boldsymbol{v}(t+h) = \boldsymbol{v}(t) + h\frac{d\boldsymbol{v}(t)}{dt} + \frac{h^2}{2}\frac{d^2\boldsymbol{v}(t)}{dt^2}+\mathcal{O}(h^3)\text{.}
+\end{equation}
+A second way to express the velocity in a Taylor expansion is:
+\begin{equation}\label{eq:velocity2}
+\boldsymbol{v}(t) = \boldsymbol{v}(t+h) - h\frac{d\boldsymbol{v}(t+h)}{dt} + \frac{h^2}{2}\frac{d^2\boldsymbol{v}(t+h)}{dt^2}+\mathcal{O}(h^3)\text{.}
+\end{equation}
+Subtracting Equation~(\ref{eq:velocity2}) from Equation~(\ref{eq:velocity}) can be expressed as:
+\begin{equation}\label{eq:velocity3}
+2\boldsymbol{v}(t+h)-2\boldsymbol{v}(t) =  h\frac{d\boldsymbol{v}(t+h)+d\boldsymbol{v}(t)}{dt} + \frac{h^2}{2}\frac{d^2\boldsymbol{v}(t)-d^2\boldsymbol{v}(t+h)}{dt^2}+\mathcal{O}(h^3)\text{.}
+\end{equation}
+If the Taylor expansion is taken for $\boldsymbol{v}(t+h)=\boldsymbol{v}(t)+\mathcal{O}(h)$ then the term $\frac{d^2\boldsymbol{v}(t)-d^2\boldsymbol{v}(t+h)}{dt^2}$ from Equation~(\ref{eq:velocity3}) reduces to $\mathcal{O}(h)$ and Equation~(\ref{eq:velocity3}) can be expressed as:
+\begin{equation}\label{eq:velocity4}
+\boldsymbol{v}(t+h)= \boldsymbol{v}(t) + \frac{h}{2}\frac{d\boldsymbol{v}(t+h)+d\boldsymbol{v}(t)}{dt} +\mathcal{O}(h^3)\text{.}
+\end{equation}
+So Equation(\ref{eq:velocity4}) can then be expressed in terms of force:
+\begin{equation}\label{eq:velocityverlet}
+\boldsymbol{v}(t+h)= \boldsymbol{v}(t) + \frac{h}{2m}(\boldsymbol{F}(t+h)+\boldsymbol{F}(t)) +\mathcal{O}(h^3)\text{.}
+\end{equation}
+\section{Boundary conditions}
+
+\section{Initial conditions}
+
+\end{document}
+
+
+
