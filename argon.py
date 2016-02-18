@@ -65,16 +65,13 @@ def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r
     @jit
     def lennard_jones(r):
         r2 = numpy.sum(r*r)
-        if r2 > r_v*r_v:
-            return 0,0
-        else:
-            r6 = r2*r2*r2
-            r8 = r6*r2
-            r12 = r6*r6
-            r14 = r8*r6
-            Fij = r * 4 * ( 12*(1/r14) -6*(1/r8) )
-            Vij = 4 * ( (1/r12) - (1/r6) )
-            return Fij, Vij
+        r6 = r2*r2*r2
+        r8 = r6*r2
+        r12 = r6*r6
+        r14 = r8*r6
+        Fij = r * 4 * ( 12*(1/r14) -6*(1/r8) )
+        Vij = 4 * ( (1/r12) - (1/r6) )
+        return Fij, Vij
 
     def lennard_jones_force_length(r):
         return 4 * ( 12*(1/r**13) - 6*(1/r**7) )

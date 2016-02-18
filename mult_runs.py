@@ -10,7 +10,7 @@ from numba import jit
 import pickle
 #from astropy.table import Table, Column
 
-rhos = [0.9]
+rhos = [0.88]
 
 cvd = [] # The d`s mean these are arrays for the dictionary
 Pd = []
@@ -21,11 +21,11 @@ U_potd = []
 
 for i in range(0,1):
 
-	T = 0.8
+	T = 0.990
 	rho = rhos[i]
 	num_particles = 864
-	n_iter = 1000
-	n_iter_init = 200
+	n_iter = 200
+	n_iter_init = 50
 	n_iter_cut = 15
 	dt = 0.004
 	n_t = 1
@@ -53,20 +53,20 @@ for i in range(0,1):
 	#     return
 
 	def storvar(vardict):
-		f = open('var_comp_rho{0}_T{1}_rmax{2}_test2.txt'.format(rho, T, r_m), 'wb')
+		f = open('var_comp_rho{0}_T{1}_rm{2}.txt'.format(rho, T, r_m), 'wb')
 		pickle.dump(vardict,f,)
 		f.close()
 		return
 
 	def Savefig(bin_size, bin_count, bins, rho, T, Vtot, Ktot, Etot, Tcurrent, v_sum, meandxlen):
-		
 		plt.figure(1)
 		xvalues = numpy.array(range(0,bin_count))*bin_size
 		plt.plot(xvalues,bins)
+		plt.gca().set_xlim([0,L/2])
 		plt.xlabel("r (sigma)")
 		plt.ylabel("n")
 		plt.title('rho={0} Temp={1}'.format(rho, T))
-		plt.savefig("Correlation_rho_{0}_Temp_{1}_test2.png".format(rho, T))
+		plt.savefig("Correlation_rho{0}_T{1}_rm{2}.png".format(rho, T, r_m))
 		plt.clf()
 
 		plt.figure(2)
@@ -78,7 +78,7 @@ for i in range(0,1):
 		plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 		plt.xlabel('Number of iterations')
 		plt.title('rho={0} T={1}'.format(rho, T))
-		plt.savefig('All_rho_{0}_T_{1}_test2.png'.format(rho,T),bbox_inches='tight')
+		plt.savefig('All_rho{0}_T{1}_rm{2}.png'.format(rho,T,r_m),bbox_inches='tight')
 		plt.clf()
 		
 		plt.figure(3)
@@ -86,7 +86,7 @@ for i in range(0,1):
 		plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 		plt.xlabel('Number of iterations')
 		plt.title('rho={0} T={1}'.format(rho, T))
-		plt.savefig('Diff_rho_{0}_T_{1}_test2.png'.format(rho,T),bbox_inches='tight')
+		plt.savefig('Diff_rho{0}_T{1}_rm{2}.png'.format(rho,T,r_m),bbox_inches='tight')
 		plt.clf()
 		return
 
@@ -96,7 +96,6 @@ for i in range(0,1):
 
 
 	for j in range(0,a):
-
 		CvN, Pbeta, bins, Vtot, Ktot, Etot, Tcurrent, meandxlen, v_sum = argon.mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r_v, r_m, n_iter_cut)
 		cvd.append(CvN)
 		Pd.append(Pbeta)
