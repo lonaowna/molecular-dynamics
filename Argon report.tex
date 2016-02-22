@@ -7,6 +7,7 @@
 \usepackage{textcomp}
 \usepackage{fixltx2e}
 \usepackage{fancyhdr}
+\graphicspath{{figures/}}
 \def\SPSB#1#2{\rlap{\textsuperscript{{#1}}}\SB{#2}}
 \def\SP#1{\textsuperscript{{#1}}}
 \def\SB#1{\textsubscript{{#1}}}
@@ -79,7 +80,16 @@ Four questions have to be answered in order to simulate argon, these are:
 \end{enumerate}
 These will be answered in the following sections.
 \section{Lennard-Jones potential}
-
+In this section the question ``What is the interaction between the argon atoms?" will be answered.\\
+A simple model that simulates interaction between argon atoms is the Lennard-Jones potential:
+\begin{equation}\label{eq:lennardjones}
+V_{LJ}=4\epsilon \left[ \left( \frac{\sigma}{r} \right)^{12} - \left( \frac{\sigma}{r} \right)^{6} \right]\text{.}
+\end{equation}
+The $r^{-12}$ term describes repulsion when the distance between the atoms is too small, which causes electrons to overlap and the $r^{-6}$ describes attraction, due to the van der Waals force. The corresponding Lennard-Jones force is:
+\begin{equation}\label{eq:lennardjonesforce}
+\boldsymbol{F}_{LJ}=-\frac{d}{dr}V_{LJ}\hat{\boldsymbol{r}}=4\frac{\epsilon}{\sigma} \left[ 12\left( \frac{\sigma}{r} \right)^{13} - 6\left( \frac{\sigma}{r} \right)^{7} \right]\hat{\boldsymbol{r}}\text{.}
+\end{equation}
+This force will be used to calculate the acceleration which will be discussed in the next section.
 \section{Velocity Verlet}
 In this section the question ``How do the argon atoms move around?" will be answered.\\
 Newton's equation of motion can be used to describe the motion of argon:
@@ -115,10 +125,25 @@ So Equation(\ref{eq:velocity4}) can then be expressed in terms of force:
 \begin{equation}\label{eq:velocityverlet}
 \boldsymbol{v}(t+h)= \boldsymbol{v}(t) + \frac{h}{2m}(\boldsymbol{F}(t+h)+\boldsymbol{F}(t)) +\mathcal{O}(h^3)\text{.}
 \end{equation}
+The standard implementation of this scheme is:
+\begin{enumerate}
+ \item $\tilde{\boldsymbol{v}} = \boldsymbol{v}(t) + h\boldsymbol{F}(t)/2$,
+ \item $\boldsymbol{r}(t+h)=\boldsymbol{r}(t)+h\tilde{\boldsymbol{v}}$,
+ \item Calculate the acceleration using Equation~(\ref{eq:lennardjonesforce}),
+ \item $\boldsymbol{v}(t+h)=\tilde{\boldsymbol{v}}+h\boldsymbol{F}(t+h)/2$.
+\end{enumerate}
 \section{Boundary conditions}
-
+In this section the question ``What are the boundary conditions?" will be answered.\\
+There are two types of boundary conditions that can be used these are the:
+\begin{enumerate}
+ \item Hard wall boundary conditions.
+ \item Periodic boundary conditions.
+\end{enumerate}
+The hard wall boundary conditions will make the argon atoms bounce of the wall. The periodic boundary conditions will make the argon atoms appear on the other side of the volume, this approximates a large (infinite) system.\\ \\
+For the simulation of interacting argon atoms, it is best to have periodic boundary conditions. The problem with hard walls is the interaction between the walls and the argon atoms. This simulation has to simulate the interaction between the argon atoms and this is best done by using periodic boundary conditions. 
 \section{Initial conditions}
-
+In this section the question ``What are the initial conditions?" will be answered.\\
+There are two variables that have to be initialized, these are the `position' and the `velocity'. The best way to initialize the position is to arrange the argon atoms in a face-centered cubic lattice, this minimizes the potential energy. Note that arranging the atoms randomly is not a good idea since there is chance that two atoms will have the same initial position, this should not be possible due to the repulsion term in the Lennard-Jones potential.\\ \\ The atoms will be given a random velocity using the Maxwell-Boltzmann distribution. This will give the atoms a random velocity according to the desired temperature.
 \end{document}
 
 
