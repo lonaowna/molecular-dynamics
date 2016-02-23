@@ -18,15 +18,17 @@ difd = []
 rhod = []
 Td = []
 U_potd = []
+p_vard = []
 
 for i in range(0,1):
 
-	T = 0.990
+	T = 1
 	rho = rhos[i]
 	num_particles = 864
-	n_iter = 200
-	n_iter_init = 50
+	n_iter = 1400
+	n_iter_init = 400
 	n_iter_cut = 15
+	n_pres = 100
 	dt = 0.004
 	n_t = 1
 	bin_count = 300
@@ -96,7 +98,11 @@ for i in range(0,1):
 
 
 	for j in range(0,a):
-		CvN, Pbeta, bins, Vtot, Ktot, Etot, Tcurrent, meandxlen, v_sum = argon.mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r_v, r_m, n_iter_cut)
+		CvN, Pbeta, bins, Vtot, Ktot, Etot, Tcurrent, meandxlen, v_sum, P_var = argon.mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r_v, r_m, n_iter_cut, n_pres)
+		print('CvN=', CvN)
+		print('Pbeta= ',Pbeta)
+		print('P_var=',P_var)
+		p_vard.append(P_var)
 		cvd.append(CvN)
 		Pd.append(Pbeta)
 		difd.append(meandxlen[n_iter-1])
@@ -107,41 +113,7 @@ for i in range(0,1):
 		print('iteration a=',j)
 
 
-	vardict = {'rho': rhod, 'T': Td, 'U_pot': U_potd,'cv': cvd, 'Diff_length': difd, 'Pressure':Pd}
-	Savefig(bin_size, bin_count, bins, rho, T, Vtot, Ktot, Etot, Tcurrent, v_sum, meandxlen)
-	storvar(vardict)
 
-
-
-# meandx = meandxlen[n_iter-1]
-# U_pot = numpy.mean(Vtot[numpy.int(n_iter*0.9):n_iter])/num_particles
-
-# varnames = ('Cv', 'Upot', 'meandx', 'Tinit', 'Tend', 'Pbeta', 'num_particles', 'n_iter', 'n_iter_init', 'dt')
-
-
-
-
-
-# print("Cv/N:", CvN)
-# print('Diffusion length: ', meandx)
-# print('num_part= ', num_particles)
-# print('Temperature= ', T)
-# print('rho= ', rho)
-# print('P_beta= ',Pbeta)
-# print('U_pot= ', U_pot)
-
-# plt.figure(1)
-# plt.plot(range(0,n_iter),Vtot/N)
-# plt.plot(range(0,n_iter),Ktot/N)
-# plt.plot(range(0,n_iter),Etot/N)
-# plt.plot(range(0,n_iter),Tcurrent)
-# plt.plot(range(0,n_iter),v_sum)
-# plt.plot(range(0,n_iter),meandxlen)
-# plt.legend(['V', 'K', 'E', 'T', 'v_sum', 'mean diffusion length'], loc='lower right')
-
-# plt.figure(2)
-# xvalues = numpy.array(range(0,bin_count))*bin_size
-# plt.plot(xvalues,bins)
-# plt.xlabel("r (sigma)")
-# plt.ylabel("n")
-# plt.show()
+	# vardict = {'rho': rhod, 'T': Td, 'U_pot': U_potd,'cv': cvd, 'Diff_length': difd, 'Pressure':Pd, 'P_var': p_vard}
+	# Savefig(bin_size, bin_count, bins, rho, T, Vtot, Ktot, Etot, Tcurrent, v_sum, meandxlen)
+	# storvar(vardict)
