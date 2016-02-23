@@ -92,7 +92,7 @@ def all_distance(x, N, L, r_m):
     return r_dis
 
 @jit
-def update(N, L, x, v, a, dt, n_t, r_all):
+def update(N, L, x, v, a, dt, n_t, r_all, i, n_pres, n_iter_init):
     Vtot = 0
     Ktot = 0
 
@@ -100,17 +100,33 @@ def update(N, L, x, v, a, dt, n_t, r_all):
     dx = v*dt
     x += dx
     a = numpy.zeros(shape=(3,N))
+    sum1 = 0
+    if i%n_pres == 0 and i > n_iter_init:
+        for i in range(0, N):
+            k = numpy.nonzero(r_all[i,:])[0]
+            for j in k: # only look at particles within the cutoff distance
+                if j > i: # only look at each pair once
+                    r = closest_image_distance(x[:,i],x[:,j],L)
+                    # calculate force, potential
+                    Fij, Vij = lennard_jones(r)
+                    rlen = numpy.sqrt(numpy.sum(r*r))
+                    Fmin = -lennard_jones(rlen)[0]
+                    sum1 += rlen*Fmin
+                    a[:,i] += Fij
+                    a[:,j] -= Fij
+                    Vtot += Vij
+    else:
+        for i in range(0, N):
+            k = numpy.nonzero(r_all[i,:])[0]
+            for j in k: # only look at particles within the cutoff distance
+                if j > i: # only look at each pair once
+                    r = closest_image_distance(x[:,i],x[:,j],L)
+                    # calculate force, potential
+                    Fij, Vij = lennard_jones(r)
+                    a[:,i] += Fij
+                    a[:,j] -= Fij
+                    Vtot += Vij
 
-    for i in range(0, N):
-        k = numpy.nonzero(r_all[i,:])[0]
-        for j in k: # only look at particles within the cutoff distance
-            if j > i: # only look at each pair once
-                r = closest_image_distance(x[:,i],x[:,j],L)
-                # calculate force, potential
-                Fij, Vij = lennard_jones(r)
-                a[:,i] += Fij
-                a[:,j] -= Fij
-                Vtot += Vij
 
     v += 0.5*a*dt
 
@@ -124,7 +140,7 @@ def update(N, L, x, v, a, dt, n_t, r_all):
     Etot = Vtot + Ktot
     v_sum = numpy.sum(v,1)
 
-    return x,v,a,Vtot,Ktot,Etot,v_sum,dx
+    return x,v,a,Vtot,Ktot,Etot,v_sum,dx, sum1
 
 @jit
 def Cv(K_vec, N):
@@ -133,16 +149,19 @@ def Cv(K_vec, N):
     return 3*N*Kmean2/(2*Kmean2-3*N*Kvar)
 
 @jit
-def pressure(N, L, T, x, v, a, rho, r_v):
-    sum1 = 0
-    for i in range (0, N) :
-        for j in range (1+i, N):
-                r = closest_image_distance(x[:,i],x[:,j],L)
-                rlen = numpy.sqrt(numpy.sum(r*r))
-                Fmin = -lennard_jones(rlen)[0]
-                sum1 += rlen*Fmin#
-    P_comp = 1 - sum1/(3*N*T) + (2*math.pi*rho/(3*T))*(8*r_v**(-3)-48/9*r_v**(-9))#this is actually the compressibility factor
-    return P_comp
+def pressure(N, L, T, sum1, rho):
+    k = numpy.nonzero(sum1)[0]
+    print('length k= ',len(k))
+    P_ar = numpy.zeros(len(k))
+    i = 0 
+    for j in k:
+        P_ar[i] = 1 - sum1[j]/(3*N*T) + (2*math.pi*rho/(3*T))*(8*(L/2)**(-3)-48/9*(L/2)**(-9))#this is actually the compressibility factor
+        print('Virial term=', sum1[j]/(3*N*T))
+        print('Pressure corection term= ',  (2*math.pi*rho/(3*T))*(8*(L/2)**(-3)-48/9*(L/2)**(-9)))
+        i += 1
+    P_var = numpy.std(P_ar)
+    P_comp = numpy.mean(P_ar)
+    return P_comp, P_var
 
 @jit
 def spacial_corr(x, N, L, bin_size, bin_count):
@@ -156,7 +175,7 @@ def spacial_corr(x, N, L, bin_size, bin_count):
             bins[math.floor(r_len/bin_size)] += 1
     return bins
 
-def graph(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_cut, bin_count, bin_size, r_all):
+def graph(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_cut, bin_count, bin_size, r_all, n_pres):
     bins = numpy.zeros(bin_count)
     Vtot = numpy.zeros(n_iter)
     Ktot = numpy.zeros(n_iter)
@@ -165,6 +184,7 @@ def graph(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_
     Tcurrent = numpy.zeros(n_iter)
     meandxlen = numpy.zeros(n_iter)
     totdx = numpy.zeros([3,N])
+    sum1 = numpy.zeros(n_iter)
     i = 0
     i_bin = 0
     while i < n_iter:
@@ -174,8 +194,9 @@ def graph(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_
             elapsed = time.time() - t
             print("-------------------------------r_all function took",elapsed)
         print("iteration",i)
+        print("n_iter= ",n_iter)
         t = time.time()
-        x, v, a, Vtot[i], Ktot[i], Etot[i], v_sum_vec, dx = update(N, L, x, v, a, dt, n_t, r_all)
+        x, v, a, Vtot[i], Ktot[i], Etot[i], v_sum_vec, dx, sum1[i] = update(N, L, x, v, a, dt, n_t, r_all, i, n_pres, n_iter_init)
         elapsed = time.time() - t
         print("update function took",elapsed)
         v_sum[i] = numpy.sqrt(numpy.sum(v_sum_vec*v_sum_vec))/N
@@ -195,7 +216,8 @@ def graph(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_
                 #thermostat: scale velocity
                 labda = numpy.sqrt((N-1)*(3/2)*T/Ktot[i])
                 v *= labda
-            if i%10 == 0:
+            if False:
+            # if i%10 == 0:
                 #correlation bins
                 new_bins = spacial_corr(x,N,L,bin_size,bin_count)
                 for j in range(0,bin_count):
@@ -203,18 +225,18 @@ def graph(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_
                 i_bin += 1#amount of times binned to normalize
         i += 1
 
-    print('i_bin= ',i_bin)
-    print('n_iter-n_iter_init= ', n_iter-n_iter_init)
-    for j in range(0,bin_count):
-        bins[j] *= L*L*L/(N*(N-1))/(4*math.pi*((j+0.5)*bin_size)**2*bin_size)
-    bins /= i_bin#divided by amount of times binned
-
-    P_beta = pressure(N, L, T, x, v, a, rho, r_v)
+    if i_bin != 0:
+        print('i_bin= ',i_bin)
+        print('n_iter-n_iter_init= ', n_iter-n_iter_init)
+        for j in range(0,bin_count):
+            bins[j] *= L*L*L/(N*(N-1))/(4*math.pi*((j+0.5)*bin_size)**2*bin_size)
+        bins /= i_bin#divided by amount of times binned
+    P_beta, P_var = pressure(N, L, T, sum1, rho)
     CvN = Cv(Ktot[n_iter_init:n_iter],N)/N
 
-    return CvN, meandxlen, P_beta, bins, Vtot, Ktot, Etot, Tcurrent, v_sum
+    return CvN, meandxlen, P_beta, bins, Vtot, Ktot, Etot, Tcurrent, v_sum, P_var
 
-def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r_v, r_m, n_iter_cut):
+def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r_v, r_m, n_iter_cut, n_pres):
     L = (num_particles/rho)**(1/3)
     n_t = 1
     print('L= ',L)
@@ -228,9 +250,9 @@ def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r
     est = time.time()-t_all
     print('r_all took ',est, 'seconds')
 
-    CvN, meandxlen, Pbeta, bins, Vtot, Ktot, Etot, Tcurrent, v_sum = graph(num_particles, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_cut, bin_count, bin_size, r_all)
+    CvN, meandxlen, Pbeta, bins, Vtot, Ktot, Etot, Tcurrent, v_sum, P_var = graph(num_particles, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_cut, bin_count, bin_size, r_all, n_pres)
 
     #ascat = anim_md.AnimatedScatter(num_particles, L, x, v, a, dt, n_t, update)
     #ascat.show()
 
-    return CvN, Pbeta, bins, Vtot, Ktot, Etot, Tcurrent, meandxlen, v_sum
+    return CvN, Pbeta, bins, Vtot, Ktot, Etot, Tcurrent, meandxlen, v_sum, P_var
