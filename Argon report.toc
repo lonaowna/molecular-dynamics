@@ -4,3 +4,6 @@
 \contentsline {section}{\numberline {2.2}Velocity Verlet}{4}
 \contentsline {section}{\numberline {2.3}Boundary conditions}{5}
 \contentsline {section}{\numberline {2.4}Initial conditions}{5}
+\contentsline {section}{\numberline {2.5}Pressure}{6}
+\contentsline {section}{\numberline {2.6}Constant volume heat capacity}{6}
+\contentsline {chapter}{\numberline {3}Results}{7}

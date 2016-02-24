@@ -144,6 +144,33 @@ For the simulation of interacting argon atoms, it is best to have periodic bound
 \section{Initial conditions}
 In this section the question ``What are the initial conditions?" will be answered.\\
 There are two variables that have to be initialized, these are the `position' and the `velocity'. The best way to initialize the position is to arrange the argon atoms in a face-centered cubic lattice, this minimizes the potential energy. Note that arranging the atoms randomly is not a good idea since there is chance that two atoms will have the same initial position, this should not be possible due to the repulsion term in the Lennard-Jones potential.\\ \\ The atoms will be given a random velocity using the Maxwell-Boltzmann distribution. This will give the atoms a random velocity according to the desired temperature.
+
+\section{Pressure}
+
+The calculation of the pressure can be rigourlously done by calculating the force of each particles exerted on the walls of the system. But since we are using periodic boundary conditions to minimize the effects of a system of finite size our system doesnt actually have walls. Thus the virial theorem is used to calculate the pressure. The following the shows shortly how the virial theorem can be used to calculate the pressure. The pressure is calculated using the virial theorem and the equation is given in equation \ref{eq:virial}.
+
+\begin{equation}\label{eq:virial}
+\frac{p}{\rho k_bT}=1-\frac{1}{3Nk_bT}\Big \langle \sum_i \sum_{j>i}r_{ij}\frac{\partial U(r)}{\partial r_{ij}}\Big \rangle -\frac{2\pi N}{3k_b T V}\int_{r_{cut}}^\infty r^3 \frac{U(r)}{\partial r}g(r)dr
+\end{equation}
+\
+Whereby the second term on the R.H.S. is the virial term and the third term is a correction term for the cutting off the potential tail.
+
+\section{Constant volume heat capacity}
+
+Since our measurements have been performed in the microcanonical ensemble (NVE) we cannot use fluctuations of the total energy to determine the heat capacity. But fortunately Lebowitz[\ref{ref:Lebo_1967}] has derived a formula where we can use the fluctuation of the kinetic energy to determine the heat capacity, this wouldbe equation \ref{eq:lebo_heat}
+
+\begin{equation}\label{eq:lebo_heat}
+\frac{\langle \partial K^2 \rangle}{\langle K \rangle^2}=\frac{2}{3N} \big( 1-\frac{3N}{2C_v}\big)
+\end{equation}\
+
+Whereby:\\
+$\langle \partial K^2 \rangle$ : variance of kinetic energy of the particles over an amount of timesteps\\
+$\langle K \rangle^2$ : The average of the kinetic energy of the particles over an amount of timesteps
+
+\chapter{Results}
+
+
+
 \end{document}
 
 

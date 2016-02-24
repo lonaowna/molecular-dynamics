@@ -155,9 +155,7 @@ def pressure(N, L, T, sum1, rho):
     P_ar = numpy.zeros(len(k))
     i = 0 
     for j in k:
-        P_ar[i] = 1 - sum1[j]/(3*N*T) + (2*math.pi*rho/(3*T))*(8*(L/2)**(-3)-48/9*(L/2)**(-9))#this is actually the compressibility factor
-        print('Virial term=', sum1[j]/(3*N*T))
-        print('Pressure corection term= ',  (2*math.pi*rho/(3*T))*(8*(L/2)**(-3)-48/9*(L/2)**(-9)))
+        P_ar[i] = 1 - sum1[j]/(3*N*T) - (2*math.pi*rho/(3*T))*(8*(L/2)**(-3)-48/9*(L/2)**(-9))#this is actually the compressibility factor
         i += 1
     P_var = numpy.std(P_ar)
     P_comp = numpy.mean(P_ar)
@@ -212,20 +210,20 @@ def graph(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_
             totdx += dx
             totdxlen = numpy.sqrt(numpy.sum(totdx*totdx,0))
             meandxlen[i] = totdxlen.mean()
-            if math.fabs(Tcurrent[i]-T) > (0.1*T):
-                #thermostat: scale velocity
-                labda = numpy.sqrt((N-1)*(3/2)*T/Ktot[i])
-                v *= labda
-            if False:
-            # if i%10 == 0:
-                #correlation bins
-                new_bins = spacial_corr(x,N,L,bin_size,bin_count)
-                for j in range(0,bin_count):
-                    bins[j] += new_bins[j]
-                i_bin += 1#amount of times binned to normalize
+            # if math.fabs(Tcurrent[i]-T) > (0.1*T):
+            #     #thermostat: scale velocity
+            #     labda = numpy.sqrt((N-1)*(3/2)*T/Ktot[i])
+            #     v *= labda
+            if True:
+                if i%10 == 0:
+                    #correlation bins
+                    new_bins = spacial_corr(x,N,L,bin_size,bin_count)
+                    for j in range(0,bin_count):
+                        bins[j] += new_bins[j]
+                    i_bin += 1#amount of times binned to normalize
         i += 1
 
-    if i_bin != 0:
+    if i_bin != 0: # If we dont bin dont do this because we otherwise divide by zero
         print('i_bin= ',i_bin)
         print('n_iter-n_iter_init= ', n_iter-n_iter_init)
         for j in range(0,bin_count):
