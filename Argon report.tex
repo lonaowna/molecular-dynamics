@@ -33,7 +33,7 @@
 
 % Author name
 {\large\textbf{Ludwig Rasmijn}}\\
-{\large\textbf{Sebastiaan Lokhorst }}\\
+{\large\textbf{Sebastiaan Lokhorst (4005058)}}\\
 {\large\textbf{Shang-Jen Wang (4215974)}}\\
 \bigskip
 {\large\textbf{Supervisors:}}\\
@@ -166,6 +166,32 @@ Since our measurements have been performed in the microcanonical ensemble (NVE) 
 Whereby:\\
 $\langle \partial K^2 \rangle$ : variance of kinetic energy of the particles over an amount of timesteps\\
 $\langle K \rangle^2$ : The average of the kinetic energy of the particles over an amount of timesteps
+
+\section{Thermostat}
+
+In our simulation, the particles are initialized in with a initial velocity drawn from the Maxwell velocity distribution, which is a function of the temperature of the system. At this moment, the mean velocity is so that the temperature of the system is at the desired value, as 'measured' using equation \ref{eq:temperature}.
+
+\begin{equation}\label{eq:temperature}
+	T = \frac{2}{3} \overline{E_k}
+\end{equation}\
+
+After the initialization, the mean velocity can change as because of transfer of potential energy to kinetic energy or vice versa. If this happens, the temperature of the system will no longer have the desired value. To correct this, we use a \emph{thermostat}, meaning we will scale the velocity of all particles with a factor $\lambda$, so the mean velocity will have the correct value corresponding to the desired temperature of the system. We use the scaling factor $\lambda$ given in equation \ref{eq:thermostat}. Note that this thermostat will change the kinetic, but not the potential energy of the system. Thus the total energy of the system will also change.
+
+\begin{equation}\label{eq:thermostat}
+	\lambda = \sqrt{\frac{ \overline{E_{k}}_\text{,desired} }{ \overline{E_{k}}_\text{,actual} }} = \sqrt{\frac{3}{2} \frac{T_\text{desired}}{\overline{E_k}}}
+\end{equation}
+
+This step can be repeated until the temperature is approximately stable, after which the total energy will stay constant (microcanonical ensemble). The thermostat can also be applied at every iteration. In that case, the kinetic energy will be constant at each step, but the total energy will fluctuate (canonical ensemble).
+
+\section{Pair correlation}
+
+The pair correlation function $g(\Delta r)$ shows the local structure of the particles in the system. It shows the average number of particles located at distance $\Delta r$ from a particle. This function can be useful to see in which state a system is. The correlation function of a crystal lattice can be easily recognized as it will have distinct peaks at the spacing of the lattice, and is clearly different from a gas, which will be mostly smooth.
+
+The correlation function $g(\Delta r)$ is computed by counting the atoms in a spherical shell centered on a particle, with radius $r$ and thickness $\Delta r$, using equation \ref{eq:correlation}.
+
+\begin{equation}\label{eq:correlation}
+	g(\Delta r) = \frac{V}{N(N-1)} \left( \int \text{d}^3 r' \sum_{i \neq j}^{N} \delta(r'-r_i) \delta(r' + \Delta r - r_j) \right)
+\end{equation}
 
 \chapter{Results}
 
