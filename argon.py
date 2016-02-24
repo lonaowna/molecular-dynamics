@@ -251,5 +251,5 @@ if __name__ == "__main__":
 
     r_all = interacting_particles(x, num_particles, L, r_m)
 
-    ascat = anim_md.AnimatedScatter(num_particles, L, x, v, a, dt, n_t, r_all, False, update)
+    ascat = anim_md.AnimatedScatter(x, L, update, N=num_particles, L=L, x=x, v=v, a=a, dt=dt, n_t=n_t, r_all=r_all, do_pressure=False)
     ascat.show()
