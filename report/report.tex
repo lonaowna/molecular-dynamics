@@ -1,63 +1,61 @@
 \documentclass[12pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
-\usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{lipsum}
-\usepackage{textcomp}
-\usepackage{fixltx2e}
-\usepackage{fancyhdr}
-\def\SPSB#1#2{\rlap{\textsuperscript{{#1}}}\SB{#2}}
-\def\SP#1{\textsuperscript{{#1}}}
-\def\SB#1{\textsubscript{{#1}}}
-\usepackage[svgnames]{xcolor}
 \usepackage{caption}
-\usepackage{subcaption}
+\usepackage{fancyhdr}
 \usepackage{float}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{subcaption}
+\usepackage[svgnames]{xcolor}
 
-\newcommand*{\rotrt}[1]{\rotatebox{90}{#1}} % Command to rotate right 90 degrees
-\newcommand*{\rotlft}[1]{\rotatebox{-90}{#1}} % Command to rotate left 90 degrees
+\newcommand*{\titleBC}{ % Command for including the title page in the document
+	\begingroup
+	\centering % Center all text
 
-\newcommand*{\titleBC}{\begingroup % Create the command for including the title page in the document
-\centering % Center all text
+	\def\CP{\textit{\Large Simulating argon}} % Title
 
-\def\CP{\textit{\Large Simulating argon }} % Title
+	\settowidth{\unitlength}{\CP} % Set the width of the curly brackets to the width of the title
+	{\color{CadetBlue}\resizebox*{\unitlength}{\baselineskip}{\rotatebox{90}{$\}$}}} \\[\baselineskip] % Print top curly bracket
+	{\color{Black}{\CP}} \\[\baselineskip] % Print title
+	{\color{Grey}\large Delft University of Technology} \\ % Tagline or further description
+	{\color{CadetBlue}\resizebox*{\unitlength}{\baselineskip}{\rotatebox{-90}{$\}$}}} % Print bottom curly bracket
 
-\settowidth{\unitlength}{\CP} % Set the width of the curly brackets to the width of the title
-{\color{CadetBlue}\resizebox*{\unitlength}{\baselineskip}{\rotrt{$\}$}}} \\[\baselineskip] % Print top curly bracket
-\textcolor{Black}{\CP} \\[\baselineskip] % Print title
-{\color{Grey}\large Delft University of Technology} \\ % Tagline or further description
-{\color{CadetBlue}\resizebox*{\unitlength}{\baselineskip}{\rotlft{$\}$}}} % Print bottom curly bracket
+	\vfill % Whitespace between the title and the author name
 
-\vfill % Whitespace between the title and the author name
+	% Author name
+	\large{\textbf{Ludwig Rasmijn ()}}\\
+	\large{\textbf{Sebastiaan Lokhorst (4005058)}}\\
+	\large{\textbf{Shang-Jen Wang (4215974)}}\\
+	\bigskip
+	\large{\textbf{Supervisors:}}\\
+	\large{\textbf{ }}
+	\vfill % Whitespace between the author name and the publisher logo
+	\pagestyle{empty}
+	27 February 2015 % Year published
 
-% Author name
-{\large\textbf{Ludwig Rasmijn}}\\
-{\large\textbf{Sebastiaan Lokhorst (4005058)}}\\
-{\large\textbf{Shang-Jen Wang (4215974)}}\\
-\bigskip
-{\large\textbf{Supervisors:}}\\
-{\large\textbf{ }}
-\vfill % Whitespace between the author name and the publisher logo
-\pagestyle{empty}
-2015 % Year published
-
-\endgroup}
+	\endgroup
+}
 
 \begin{document}
+
 \pagestyle{empty}
 \pagenumbering{gobble}
 \titleBC
-\newpage
-\begin{abstract}
-\noindent
 
+\newpage
+
+\begin{abstract}
+asdfasdf
 \end{abstract}
 
 \newpage
+
 \tableofcontents
 
 \newpage
+
 \pagestyle{fancy}
 % Clear the header and footer
 \fancyhead{}
@@ -66,11 +64,11 @@
 % Set the right side of the footer to be the page number
 \fancyfoot[C]{\thepage}
 \pagenumbering{arabic}
-\listoffigures
 
 \chapter{Introduction}
 
 \chapter{Theory}
+
 Four questions have to be answered in order to simulate argon, these are:
 \begin{enumerate}
  \item What is the interaction between the argon atoms?
@@ -79,7 +77,9 @@ Four questions have to be answered in order to simulate argon, these are:
  \item What are the initial conditions?
 \end{enumerate}
 These will be answered in the following sections.
+
 \section{Lennard-Jones potential}
+
 In this section the question ``What is the interaction between the argon atoms?" will be answered.\\
 A simple model that simulates interaction between argon atoms is the Lennard-Jones potential:
 \begin{equation}\label{eq:lennardjones}
@@ -140,14 +140,16 @@ There are two types of boundary conditions that can be used these are the:
  \item Periodic boundary conditions.
 \end{enumerate}
 The hard wall boundary conditions will make the argon atoms bounce of the wall. The periodic boundary conditions will make the argon atoms appear on the other side of the volume, this approximates a large (infinite) system.\\ \\
-For the simulation of interacting argon atoms, it is best to have periodic boundary conditions. The problem with hard walls is the interaction between the walls and the argon atoms. This simulation has to simulate the interaction between the argon atoms and this is best done by using periodic boundary conditions. 
+For the simulation of interacting argon atoms, it is best to have periodic boundary conditions. The problem with hard walls is the interaction between the walls and the argon atoms. This simulation has to simulate the interaction between the argon atoms and this is best done by using periodic boundary conditions.
+
 \section{Initial conditions}
+
 In this section the question ``What are the initial conditions?" will be answered.\\
 There are two variables that have to be initialized, these are the `position' and the `velocity'. The best way to initialize the position is to arrange the argon atoms in a face-centered cubic lattice, this minimizes the potential energy. Note that arranging the atoms randomly is not a good idea since there is chance that two atoms will have the same initial position, this should not be possible due to the repulsion term in the Lennard-Jones potential.\\ \\ The atoms will be given a random velocity using the Maxwell-Boltzmann distribution. This will give the atoms a random velocity according to the desired temperature.
 
 \section{Pressure}
 
-The calculation of the pressure can be rigourlously done by calculating the force of each particles exerted on the walls of the system. But since we are using periodic boundary conditions to minimize the effects of a system of finite size our system doesnt actually have walls. Thus the virial theorem is used to calculate the pressure. The following the shows shortly how the virial theorem can be used to calculate the pressure. The pressure is calculated using the virial theorem and the equation is given in equation \ref{eq:virial}.
+The calculation of the pressure can be rigorously done by calculating the force of each particles exerted on the walls of the system. But since we are using periodic boundary conditions to minimize the effects of a system of finite size our system doesn't actually have walls. Thus the virial theorem is used to calculate the pressure. The following the shows shortly how the virial theorem can be used to calculate the pressure. The pressure is calculated using the virial theorem and the equation is given in equation \ref{eq:virial}.
 
 \begin{equation}\label{eq:virial}
 \frac{p}{\rho k_bT}=1-\frac{1}{3Nk_bT}\Big \langle \sum_i \sum_{j>i}r_{ij}\frac{\partial U(r)}{\partial r_{ij}}\Big \rangle -\frac{2\pi N}{3k_b T V}\int_{r_{cut}}^\infty r^3 \frac{U(r)}{\partial r}g(r)dr
@@ -155,21 +157,21 @@ The calculation of the pressure can be rigourlously done by calculating the forc
 \
 Whereby the second term on the R.H.S. is the virial term and the third term is a correction term for the cutting off the potential tail.
 
-\section{Constant volume heat capacity}
+\section{Heat capacity at constant volume}
 
-Since our measurements have been performed in the microcanonical ensemble (NVE) we cannot use fluctuations of the total energy to determine the heat capacity. But fortunately Lebowitz\cite{lebowitz1967} has derived a formula where we can use the fluctuation of the kinetic energy to determine the heat capacity, this wouldbe equation \ref{eq:lebo_heat}
+Since our measurements have been performed in the microcanonical ensemble (NVE) we cannot use fluctuations of the total energy to determine the heat capacity. But fortunately Lebowitz\cite{lebowitz1967} has derived a formula where we can use the fluctuation of the kinetic energy to determine the heat capacity, this would be equation \ref{eq:lebo_heat}
 
 \begin{equation}\label{eq:lebo_heat}
 \frac{\langle \partial K^2 \rangle}{\langle K \rangle^2}=\frac{2}{3N} \big( 1-\frac{3N}{2C_v}\big)
 \end{equation}\
 
 Whereby:\\
-$\langle \partial K^2 \rangle$ : variance of kinetic energy of the particles over an amount of timesteps\\
-$\langle K \rangle^2$ : The average of the kinetic energy of the particles over an amount of timesteps
+$\langle \partial K^2 \rangle$ : variance of kinetic energy of the particles over an amount of time steps\\
+$\langle K \rangle^2$ : The average of the kinetic energy of the particles over an amount of time steps
 
 \section{Thermostat}
 
-In our simulation, the particles are initialized in with a initial velocity drawn from the Maxwell velocity distribution, which is a function of the temperature of the system. At this moment, the mean velocity is so that the temperature of the system is at the desired value, as 'measured' using equation \ref{eq:temperature}.
+In our simulation, the particles are initialized in with a initial velocity drawn from the Maxwell velocity distribution, which is a function of the temperature of the system. At this moment, the mean velocity is so that the temperature of the system is at the desired value, as `measured' using equation \ref{eq:temperature}.
 
 \begin{equation}\label{eq:temperature}
 	T = \frac{2}{3} \overline{E_k}
@@ -223,7 +225,7 @@ To control that we had a microcanonical ensemble we controlled the total energy 
 \label{fig:all_rho}
 \end{figure}
 
-The results for the gas phase are showed in figure \ref{fig:gas_cor}, from this figure it is evident that system is in the gas phase because the system doesnt exhibit structure that a liquid would exhibit which is shown in figure \ref{fig:liq_cor}. But a solid on the other hand has
+The results for the gas phase are showed in figure \ref{fig:gas_cor}, from this figure it is evident that system is in the gas phase because the system doesn't exhibit structure that a liquid would exhibit which is shown in figure \ref{fig:liq_cor}. But a solid on the other hand has
 
 \begin{figure}[H]
 \centering

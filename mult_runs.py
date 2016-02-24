@@ -1,14 +1,12 @@
 import argon
 import math
-import numpy
 import scipy.stats
 import random
 import time
-#import anim_md
+import numpy
+import pickle
 import matplotlib.pyplot as plt
 from numba import jit
-import pickle
-#from astropy.table import Table, Column
 
 rhos = [0.88,0.8,0.7]
 
