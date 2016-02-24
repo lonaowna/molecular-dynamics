@@ -7,13 +7,13 @@
 \usepackage{textcomp}
 \usepackage{fixltx2e}
 \usepackage{fancyhdr}
-\graphicspath{{figures/}}
 \def\SPSB#1#2{\rlap{\textsuperscript{{#1}}}\SB{#2}}
 \def\SP#1{\textsuperscript{{#1}}}
 \def\SB#1{\textsubscript{{#1}}}
 \usepackage[svgnames]{xcolor}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{float}
 
 \newcommand*{\rotrt}[1]{\rotatebox{90}{#1}} % Command to rotate right 90 degrees
 \newcommand*{\rotlft}[1]{\rotatebox{-90}{#1}} % Command to rotate left 90 degrees
@@ -157,7 +157,7 @@ Whereby the second term on the R.H.S. is the virial term and the third term is a
 
 \section{Constant volume heat capacity}
 
-Since our measurements have been performed in the microcanonical ensemble (NVE) we cannot use fluctuations of the total energy to determine the heat capacity. But fortunately Lebowitz[\ref{ref:Lebo_1967}] has derived a formula where we can use the fluctuation of the kinetic energy to determine the heat capacity, this wouldbe equation \ref{eq:lebo_heat}
+Since our measurements have been performed in the microcanonical ensemble (NVE) we cannot use fluctuations of the total energy to determine the heat capacity. But fortunately Lebowitz\cite{lebowitz1967} has derived a formula where we can use the fluctuation of the kinetic energy to determine the heat capacity, this wouldbe equation \ref{eq:lebo_heat}
 
 \begin{equation}\label{eq:lebo_heat}
 \frac{\langle \partial K^2 \rangle}{\langle K \rangle^2}=\frac{2}{3N} \big( 1-\frac{3N}{2C_v}\big)
@@ -195,9 +195,56 @@ The correlation function $g(\Delta r)$ is computed by counting the atoms in a sp
 
 \chapter{Results}
 
+To control the correctness of the MD program we have simulated at values that have been achieved by others \cite{thijssen} in their table 8.1. The results that has been achieved with our simulation which are given in table \ref{table:results} are in accordance with results from others. Thus we can hereby assume that the parameters of the simulation are correct.
+\begin{table}[h]
+\caption{Simulation results}\label{table:results}
+\begin{center}
+	\begin{tabular}{| l | l | l | l | l | l |}
+	\hline
+	$\rho$ & T & D &$ \frac{\beta p}{\rho} \pm \sigma $& $C_v \pm \sigma$ &$ U_{pot}$ \\ \hline
+	0.7 & 1 & $ unknown$ & $0.14\pm 0.14$ & $ 2.33 \pm 0.15$ & $-4.77\pm 0.01$   \\
+	0.8 & 1 & $ unknown$ & $1.44\pm 0.18$ & $ 2.71 \pm 0.31$ & $-5.39\pm 0.005$   \\
+	0.88 & 1 & $ unknown$ & $2.97\pm 0.19$ & $ -3.5 \pm 26.8$ & $-5.84\pm 0.014$   \\
+	\hline
+	\end{tabular}
+\end{center}
+\end{table}
+
+Further some simulations were made to study argon in the the gas, liquid and solid phase. From the correlation function it can be easily seen in which phase the argon is  in. Thus in the following sections we will show results that has been achieved for the gas, liquid and solid phase.
+
+\section{Microcanonical ensemble}
+
+To control that we had a microcanonical ensemble we controlled the total energy of the system which should be constant after the equilibration, and this is indeed seen in figure \ref{fig:all_rho}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{All_rho088_T1_rm35_2.png}
+\caption{The potential energy(blue) and kinetic energy(green) fluctuates but the total energy is constant(red) }
+\label{fig:all_rho}
+\end{figure}
+
+The results for the gas phase are showed in figure \ref{fig:gas_cor}, from this figure it is evident that system is in the gas phase because the system doesnt exhibit structure that a liquid would exhibit which is shown in figure \ref{fig:liq_cor}. But a solid on the other hand has
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{Correlation_rho03_T3_rm35_2.png}
+\caption{Spatial correlation function for $\rho =0.3$ and T=3 thus system is in the gas phase}
+\label{fig:gas_cor}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{Correlation_rho088_T1_rm35_2.png}
+\caption{Spatial correlation function for $\rho =0.88$ and T=1 thus system is in the liquid phase}
+\label{fig:liq_cor}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{Correlation_rho18_T05_rm35_2.png}
+\caption{Spatial correlation function for $\rho =1.8$ and T=0.5 and the structure shows that this is a solid}
+\label{fig:solid_cor}
+\end{figure}
 
 
 \end{document}
-
-
-
