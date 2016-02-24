@@ -1,6 +1,0 @@
-\contentsline {chapter}{\numberline {1}Introduction}{2}
-\contentsline {chapter}{\numberline {2}Theory}{3}
-\contentsline {section}{\numberline {2.1}Lennard-Jones potential}{3}
-\contentsline {section}{\numberline {2.2}Velocity Verlet}{3}
-\contentsline {section}{\numberline {2.3}Boundary conditions}{4}
-\contentsline {section}{\numberline {2.4}Initial conditions}{4}
