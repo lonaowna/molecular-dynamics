@@ -197,7 +197,7 @@ The correlation function $g(\Delta r)$ is computed by counting the atoms in a sp
 
 \chapter{Results}
 
-To control the correctness of the MD program we have simulated at values that have been achieved by others \cite{thijssen} in their table 8.1. The results that has been achieved with our simulation which are given in table \ref{table:results} are in accordance with results from others. Thus we can hereby assume that the parameters of the simulation are correct.
+To verify the correctness of our simulation program, we have simulated using the same parameters that have been used by others such as \cite{thijssen} (table 8.1). The results that have been achieved with our simulation are given in table \ref{table:results}. They are in accordance with results from others. Thus we assume that the parameters of the simulation are correct.
 \begin{table}[h]
 \caption{Simulation results}\label{table:results}
 \begin{center}
@@ -216,16 +216,18 @@ Further some simulations were made to study argon in the the gas, liquid and sol
 
 \section{Microcanonical ensemble}
 
-To control that we had a microcanonical ensemble we controlled the total energy of the system which should be constant after the equilibration, and this is indeed seen in figure \ref{fig:all_rho}.
+To control that we had a microcanonical ensemble we verified that the total energy of the system is constant after the equilibration. This is indeed seen in figure \ref{fig:all_rho}.
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{All_rho088_T1_rm35_2.png}
-\caption{The potential energy(blue) and kinetic energy(green) fluctuates but the total energy is constant(red) }
+\caption{The potential energy (blue) and kinetic energy (green) both fluctuate, but in opposing direction, leading to a constant total energy (red).}
 \label{fig:all_rho}
 \end{figure}
 
-The results for the gas phase are showed in figure \ref{fig:gas_cor}, from this figure it is evident that system is in the gas phase because the system doesn't exhibit structure that a liquid would exhibit which is shown in figure \ref{fig:liq_cor}. But a solid on the other hand has
+\section{Correlation function}
+
+The correlation function for the gas phase are showed in figure \ref{fig:gas_cor}. From this figure it is evident that system is in the gas phase because the system doesn't exhibit any apparent structure. In the liquid phase it exhibits some structure, which is shown in figure \ref{fig:liq_cor}. A solid on the other hand, has a very clear lattice structure, as seen in \ref{fig:solid_cor}.
 
 \begin{figure}[H]
 \centering
@@ -248,6 +250,16 @@ The results for the gas phase are showed in figure \ref{fig:gas_cor}, from this 
 \label{fig:solid_cor}
 \end{figure}
 
+\section{Isothermals}
+
+We can further investigate the phase of the system by generate isothermal lines in a $P$-$v$ plot. This is done by measuring the pressure while changing the density of the system and forcing a constant temperature using the thermostat. The resulting isothermals can be seen in figure \ref{fig:isothermals}. It is clear that for higher temperatures, the line becomes smoother and the dip disappears. The dip indicates that the system is undergoing a phase transition.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{Isothermen.png}
+\caption{Isothermals for different temperatures. Note the absence of the dip for higher temperatures, indicating that the system is in gas phase.}
+\label{fig:isothermals}
+\end{figure}
 
 \bibliographystyle{plain}
 \bibliography{references}
