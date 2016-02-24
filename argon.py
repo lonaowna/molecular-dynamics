@@ -5,9 +5,9 @@ from numba import jit
 import anim_md
 numpy.set_printoptions(threshold=numpy.nan)
 
-THERMOSTAT_INTERVAL = 10
 DO_THERMOSTAT_DURING_INIT = True
-DO_THERMOSTAT_AFTER_INIT = False
+DO_THERMOSTAT_AFTER_INIT = True
+THERMOSTAT_INTERVAL = 10
 DO_CORRELATION = False
 
 def print_particles(x, v, a, N):
@@ -94,7 +94,7 @@ def interacting_particles(x, N, L, r_m):
     return r_dis
 
 @jit
-def update(N, L, x, v, a, dt, n_t, r_all, i, n_pres, n_iter_init):
+def update(N, L, x, v, a, dt, n_t, r_all, do_pressure):
     Vtot = 0
     Ktot = 0
 
@@ -102,8 +102,8 @@ def update(N, L, x, v, a, dt, n_t, r_all, i, n_pres, n_iter_init):
     dx = v*dt
     x += dx
     a = numpy.zeros(shape=(3,N))
-    sum1 = 0
-    if i%n_pres == 0 and i > n_iter_init:
+    sum1 = 0 # used to determine pressure
+    if do_pressure:
         for i in range(0, N):
             k = numpy.nonzero(r_all[i,:])[0]
             for j in k: # only look at particles within the cutoff distance
@@ -173,7 +173,7 @@ def spacial_corr(x, N, L, bin_size, bin_count):
             bins[math.floor(r_len/bin_size)] += 1
     return bins
 
-def graph(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_cut, bin_count, bin_size, r_all, n_pres):
+def run(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, interaction_interval, bin_count, bin_size, r_all, n_pres):
     bins = numpy.zeros(bin_count)
     Vtot = numpy.zeros(n_iter)
     Ktot = numpy.zeros(n_iter)
@@ -187,13 +187,14 @@ def graph(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_
     i_bin = 0
     while i < n_iter:
         print("iteration",i,"of",n_iter)
-        if i%n_iter_cut == 0:
+        if i%interaction_interval == 0:
             t = time.time()
             r_all = interacting_particles(x, N, L, r_m)
             elapsed = time.time() - t
             print("finding interacting particle pairs took",elapsed)
         t = time.time()
-        x, v, a, Vtot[i], Ktot[i], Etot[i], v_sum_vec, dx, sum1[i] = update(N, L, x, v, a, dt, n_t, r_all, i, n_pres, n_iter_init)
+        do_pressure = (i%n_pres == 0 and i > n_iter_init)
+        x, v, a, Vtot[i], Ktot[i], Etot[i], v_sum_vec, dx, sum1[i] = update(N, L, x, v, a, dt, n_t, r_all, do_pressure)
         elapsed = time.time() - t
         print("update took",elapsed)
         v_sum[i] = numpy.sqrt(numpy.sum(v_sum_vec*v_sum_vec))/N
@@ -231,19 +232,24 @@ def graph(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_
 
     return CvN, meandxlen, P_beta, bins, Vtot, Ktot, Etot, Tcurrent, v_sum, P_var
 
-def mainf(T, rho, num_particles, n_iter, n_iter_init, dt, bin_count, bin_size, r_v, r_m, n_iter_cut, n_pres):
+#####
+# The following will only run if this file is directly executed (not imported)
+#####
+
+if __name__ == "__main__":
+    T = 1
+    rho = 1
+    num_particles = 108
     L = (num_particles/rho)**(1/3)
+    dt = 0.004
     n_t = 1
-    print('L= ',L)
+    r_m = L
 
     x = initial_positions(num_particles, L)
     v = initial_velocities(num_particles, T)
     a = initial_accelerations(num_particles)
-    
+
     r_all = interacting_particles(x, num_particles, L, r_m)
-    CvN, meandxlen, Pbeta, bins, Vtot, Ktot, Etot, Tcurrent, v_sum, P_var = graph(num_particles, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, n_iter_cut, bin_count, bin_size, r_all, n_pres)
 
-    #ascat = anim_md.AnimatedScatter(num_particles, L, x, v, a, dt, n_t, update)
-    #ascat.show()
-
-    return CvN, Pbeta, bins, Vtot, Ktot, Etot, Tcurrent, meandxlen, v_sum, P_var
+    ascat = anim_md.AnimatedScatter(num_particles, L, x, v, a, dt, n_t, r_all, False, update)
+    ascat.show()
