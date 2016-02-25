@@ -180,8 +180,8 @@ def run(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, interacti
     Etot = numpy.zeros(n_iter)
     v_sum = numpy.zeros(n_iter)
     Tcurrent = numpy.zeros(n_iter)
-    meandxlen = numpy.zeros(n_iter)
-    totdx = numpy.zeros([3,N])
+    meandiff2 = numpy.zeros(n_iter)
+    totdiff = numpy.zeros([3,N])
     sum1 = numpy.zeros(n_iter)
     i = 0
     i_bin = 0
@@ -207,9 +207,10 @@ def run(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, interacti
                     v *= labda
         else:
             #diffusion length
-            totdx += dx
-            totdxlen = numpy.sqrt(numpy.sum(totdx*totdx,0))
-            meandxlen[i] = totdxlen.mean()
+            totdiff += dx
+            totdifflen = numpy.sqrt(numpy.sum(totdiff*totdiff,0))
+            meandiff2[i] = (totdifflen*totdifflen).mean()
+
             if DO_THERMOSTAT_AFTER_INIT:
                 if i%THERMOSTAT_INTERVAL == 0:
                     #thermostat: scale velocity
@@ -230,7 +231,7 @@ def run(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, interacti
     P_beta, P_var = pressure(N, L, T, sum1, rho)
     CvN = Cv(Ktot[n_iter_init:n_iter],N)/N
 
-    return CvN, meandxlen, P_beta, bins, Vtot, Ktot, Etot, Tcurrent, v_sum, P_var
+    return CvN, meandiff2, P_beta, bins, Vtot, Ktot, Etot, Tcurrent, v_sum, P_var
 
 #####
 # The following will only run if this file is directly executed (not imported)

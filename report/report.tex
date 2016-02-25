@@ -25,7 +25,7 @@
 	\vfill % Whitespace between the title and the author name
 
 	% Author name
-	\large{\textbf{Ludwig Rasmijn ()}}\\
+	\large{\textbf{Ludwig Rasmijn (4106644)}}\\
 	\large{\textbf{Sebastiaan Lokhorst (4005058)}}\\
 	\large{\textbf{Shang-Jen Wang (4215974)}}\\
 	\bigskip
@@ -47,7 +47,9 @@
 \newpage
 
 \begin{abstract}
-asdfasdf
+We have created a molecular dynamics simulation to investigate the behavior of a homegenous system of e.g. argon particles. In our simulation, the particles interact with a Lennard-Jones potential. The velocity Verlet algorithm is used to integrate the equations of motion and update the postition and velocity of the particles. The initial conditions consist of the particles spaced out evenly in a FCC lattice, with an initial velocity drawn from the Maxwell-Boltzman distribution as a function of the intial temperature. We use periodic boundary conditions to only simulate the interaction between argon atoms.
+
+After verifying that all basic laws such as energy conservation hold, we have investigated multiple properties. We have determined the specific heat of the system at multiple densities and our results were in accordance with previous simulations and experiments. Besides that we have also investigated the phase of our system at various temperatures and densities by computing the spacial correlation of the particles and looking at the compressibility of the system. The spacial correlation clearly shows the difference between a gas, fluid or solid phase. This was also noticeable when looking at isothermal lines in a compression diagram.
 \end{abstract}
 
 \newpage
@@ -66,6 +68,8 @@ asdfasdf
 \pagenumbering{arabic}
 
 \chapter{Introduction}
+
+Using statistical physics, a lot of properties of a system can be derived by looking at the behaviour of many particles. Because direct experimentation is impossible, it is an ideal subject to simulate in a computer program. Starting out with the right inter-particle potential, we can simulate the interaction and movement of the particles. Combined with the righ initial and boundary conditions, it is possible to determine some thermodynamical properties of a material like the temperature, spacial correlation, pressure and diffusion.
 
 \chapter{Theory}
 
@@ -260,6 +264,10 @@ We can further investigate the phase of the system by generate isothermal lines 
 \caption{Isothermals for different temperatures. Note the absence of the dip for higher temperatures, indicating that the system is in gas phase.}
 \label{fig:isothermals}
 \end{figure}
+
+\section{Diffusion}
+
+
 
 \bibliographystyle{plain}
 \bibliography{references}
