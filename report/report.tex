@@ -206,7 +206,7 @@ To verify the correctness of our simulation program, we have simulated using the
 	$\rho$ & T & D &$ \frac{\beta p}{\rho} \pm \sigma $& $C_v \pm \sigma$ &$ U_{pot}$ \\ \hline
 	0.7 & 1 & $ unknown$ & $0.14\pm 0.14$ & $ 2.33 \pm 0.15$ & $-4.77\pm 0.01$   \\
 	0.8 & 1 & $ unknown$ & $1.44\pm 0.18$ & $ 2.71 \pm 0.31$ & $-5.39\pm 0.005$   \\
-	0.88 & 1 & $ unknown$ & $2.97\pm 0.19$ & $ -3.5 \pm 26.8$ & $-5.84\pm 0.014$   \\
+	0.88 & 1 & $ unknown$ & $2.97\pm 0.19$ & $ 3.00 \pm 0.45$ & $-5.84\pm 0.014$   \\
 	\hline
 	\end{tabular}
 \end{center}
@@ -260,6 +260,16 @@ We can further investigate the phase of the system by generate isothermal lines 
 \caption{Isothermals for different temperatures. Note the absence of the dip for higher temperatures, indicating that the system is in gas phase.}
 \label{fig:isothermals}
 \end{figure}
+
+\chapter{Conclusion}
+
+By comparing our results with other simulations performed that has been tested experimentaly it can be concluded that this molecular dynamics simulation yields the desired results for argon. As shown in table \ref{table:results} these results corresponds to values that was given by J.Thijsen in [\cite{thijssen} in table 8.1. We mostly compared the compression factor of our simulation with values from J.Thijsen.
+
+Further it was verified that we were measuring in the microcanonical ensemble by verifying that the total energy remained constant after the system was equilibrised. Hereafter the argon simulation was simulated in the gas, solid and liquid phase and this was checked by studying the correlation function of the system. And as was expected the correlation function of a solid and liquid appeared structured whereas the function of the gas had no structure to it. Moreover the heat capacity results were in accordance 
+with previously performed experiments by Lebowitz \cite{lebowitz1967}. 
+
+Also we studied isothermal lines in a PV diagram and compared these with the spatial correlation function to study phase "transitions" from a PV diagram. " sebas moet voegen" "zet eventueel problemen met isothermen op".
+
 
 \newpage
 \begin{thebibliography}{9}
