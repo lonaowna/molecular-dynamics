@@ -217,6 +217,15 @@ To verify the correctness of our simulation program, we have simulated using the
 \end{center}
 \end{table}
 
+Also the initial placement of the particles were visualised to assure that the particles were placed correctly in the FCC latice which is shown in figure \ref{fig:init_place}. This visual aid was also used to spot any discreptancies in the movement of the particles for example at periodic boundaries.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{fcc.png}
+\caption{Initial placement of particles in FCC latice }
+\label{fig:init_place}
+\end{figure}
+
 Further some simulations were made to study argon in the the gas, liquid and solid phase. From the correlation function it can be easily seen in which phase the argon is  in. Thus in the following sections we will show results that has been achieved for the gas, liquid and solid phase.
 
 \section{Microcanonical ensemble}
@@ -266,11 +275,15 @@ We can further investigate the phase of the system by generate isothermal lines 
 \label{fig:isothermals}
 \end{figure}
 
+\section{Error analysis}
+
+There were different methods used to determine the error in the pressure and the heat capacity. Firstly the error in the pressure was determined by measuring the pressure over each 100 steps over the course of one simulation after equilibration, and thereafter the variance in these values were used as the error for the pressure. Secondly to determine the error in the heat capacity the simulation was ran 5 times and for each of these 5 times the heat capacity was calculated and the variance in these values were used as the error for the heat capacity.
+
 \chapter{Conclusion}
 
-By comparing our results with other simulations performed that has been tested experimentaly it can be concluded that this molecular dynamics simulation yields the desired results for argon. As shown in table \ref{table:results} these results corresponds to values that was given by J.Thijsen in [\cite{thijssen} in table 8.1. We mostly compared the compression factor of our simulation with values from J.Thijsen.
+By comparing our results with other simulations performed that has been tested experimentaly it can be concluded that this molecular dynamics simulation yields the desired results for argon. As shown in table \ref{table:results} these results corresponds to values that was given by J.Thijsen in [\cite{thijssen} in table 8.1. We mostly compared the compression factor of our simulation.
 
-Further it was verified that we were measuring in the microcanonical ensemble by verifying that the total energy remained constant after the system was equilibrised. Hereafter the argon simulation was simulated in the gas, solid and liquid phase and this was checked by studying the correlation function of the system. And as was expected the correlation function of a solid and liquid appeared structured whereas the function of the gas had no structure to it. Moreover the heat capacity results were in accordance 
+Further we controlled the initial placement and the periodic boundary condition of the particles with an animation plot. Then we verified that we were measuring in the microcanonical ensemble by verifying that the total energy remained constant after the system was equilibrised. Hereafter the argon simulation was simulated in the gas, solid and liquid phase and this was checked by studying the correlation function of the system. And as was expected the correlation function of a solid and liquid appeared structured whereas the function of the gas had no structure to it. Moreover the heat capacity results were in accordance 
 with previously performed experiments by Lebowitz \cite{lebowitz1967}. 
 
 Also we studied isothermal lines in a PV diagram and compared these with the spatial correlation function to study phase "transitions" from a PV diagram. " sebas moet voegen" "zet eventueel problemen met isothermen op".
