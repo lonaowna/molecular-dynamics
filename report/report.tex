@@ -10,30 +10,25 @@
 \usepackage{subcaption}
 \usepackage[svgnames]{xcolor}
 
-\newcommand*{\titleBC}{ % Command for including the title page in the document
+\newcommand*{\titleBC}{
 	\begingroup
-	\centering % Center all text
+	\centering
 
-	\def\CP{\textit{\Large Simulating argon}} % Title
+	\def\CP{\textit{\Large Simulating argon}}
 
 	\settowidth{\unitlength}{\CP} % Set the width of the curly brackets to the width of the title
 	{\color{CadetBlue}\resizebox*{\unitlength}{\baselineskip}{\rotatebox{90}{$\}$}}} \\[\baselineskip] % Print top curly bracket
 	{\color{Black}{\CP}} \\[\baselineskip] % Print title
-	{\color{Grey}\large Delft University of Technology} \\ % Tagline or further description
+	{\color{Black}\large Computational Physics} \\
+	{\color{Grey}\large Delft University of Technology} \\
 	{\color{CadetBlue}\resizebox*{\unitlength}{\baselineskip}{\rotatebox{-90}{$\}$}}} % Print bottom curly bracket
-
-	\vfill % Whitespace between the title and the author name
-
-	% Author name
+	\vfill
 	\large{\textbf{Ludwig Rasmijn (4106644)}}\\
 	\large{\textbf{Sebastiaan Lokhorst (4005058)}}\\
 	\large{\textbf{Shang-Jen Wang (4215974)}}\\
-	\bigskip
-	\large{\textbf{Supervisors:}}\\
-	\large{\textbf{ }}
-	\vfill % Whitespace between the author name and the publisher logo
+	\vfill
 	\pagestyle{empty}
-	27 February 2015 % Year published
+	27 February 2015
 
 	\endgroup
 }
@@ -47,7 +42,7 @@
 \newpage
 
 \begin{abstract}
-We have created a molecular dynamics simulation to investigate the behavior of a homegenous system of e.g. argon particles. In our simulation, the particles interact with a Lennard-Jones potential. The velocity Verlet algorithm is used to integrate the equations of motion and update the postition and velocity of the particles. The initial conditions consist of the particles spaced out evenly in a FCC lattice, with an initial velocity drawn from the Maxwell-Boltzman distribution as a function of the intial temperature. We use periodic boundary conditions to only simulate the interaction between argon atoms.
+We have created a molecular dynamics simulation to investigate the behavior of a homogeneous system of e.g. argon particles. In our simulation, the particles interact with a Lennard-Jones potential. The velocity Verlet algorithm is used to integrate the equations of motion and update the position and velocity of the particles. The initial conditions consist of the particles spaced out evenly in a FCC lattice, with an initial velocity drawn from the Maxwell-Boltzman distribution as a function of the initial temperature. We use periodic boundary conditions to only simulate the interaction between argon atoms.
 
 After verifying that all basic laws such as energy conservation hold, we have investigated multiple properties. We have determined the specific heat of the system at multiple densities and our results were in accordance with previous simulations and experiments. Besides that we have also investigated the phase of our system at various temperatures and densities by computing the spacial correlation of the particles and looking at the compressibility of the system. The spacial correlation clearly shows the difference between a gas, fluid or solid phase. This was also noticeable when looking at isothermal lines in a compression diagram.
 \end{abstract}
@@ -69,7 +64,7 @@ After verifying that all basic laws such as energy conservation hold, we have in
 
 \chapter{Introduction}
 
-Using statistical physics, a lot of properties of a system can be derived by looking at the behaviour of many particles. Because direct experimentation is impossible, it is an ideal subject to simulate in a computer program. Starting out with the right inter-particle potential, we can simulate the interaction and movement of the particles. Combined with the righ initial and boundary conditions, it is possible to determine some thermodynamical properties of a material like the temperature, spacial correlation, pressure and diffusion.
+Using statistical physics, a lot of properties of a system can be derived by looking at the behavior of many particles. Because direct experimentation is impossible, it is an ideal subject to simulate in a computer program. Starting out with the right inter-particle potential, one can simulate the interaction and movement of the particles. Combined with the right initial and boundary conditions, it is possible to determine some thermodynamical properties of a material like the temperature, spacial correlation, pressure and diffusion.
 
 \chapter{Theory}
 
@@ -208,21 +203,22 @@ To verify the correctness of our simulation program, we have simulated using the
 \begin{center}
 	\begin{tabular}{| l | l | l | l | l | l |}
 	\hline
-	$\rho$ & T & D &$ \frac{\beta p}{\rho} \pm \sigma $& $C_v \pm \sigma$ &$ U_{pot}$ \\ \hline
-	0.7 & 1 & $ unknown$ & $0.14\pm 0.14$ & $ 2.33 \pm 0.15$ & $-4.77\pm 0.01$   \\
-	0.8 & 1 & $ unknown$ & $1.44\pm 0.18$ & $ 2.71 \pm 0.31$ & $-5.39\pm 0.005$   \\
-	0.88 & 1 & $ unknown$ & $2.97\pm 0.19$ & $ 3.00 \pm 0.45$ & $-5.84\pm 0.014$   \\
+	$\rho$ & T & D &$ \frac{\beta p}{\rho} \pm \sigma $& $C_v \pm \sigma$ &$ U_{pot}$ \\
+	\hline
+	0.7  & 1 & $unknown$ & $0.14 \pm 0.14$ & $2.33 \pm 0.15$ & $-4.77 \pm 0.01$  \\
+	0.8  & 1 & $unknown$ & $1.44 \pm 0.18$ & $2.71 \pm 0.31$ & $-5.39 \pm 0.005$ \\
+	0.88 & 1 & $unknown$ & $2.97 \pm 0.19$ & $3.00 \pm 0.45$ & $-5.84 \pm 0.014$ \\
 	\hline
 	\end{tabular}
 \end{center}
 \end{table}
 
-Also the initial placement of the particles were visualised to assure that the particles were placed correctly in the FCC latice which is shown in figure \ref{fig:init_place}. This visual aid was also used to spot any discreptancies in the movement of the particles for example at periodic boundaries.
+Also the initial placement of the particles were visualized to assure that the particles were placed correctly in the FCC lattice which is shown in figure \ref{fig:init_place}. This visual aid was also used to spot any discrepancies in the movement of the particles for example at periodic boundaries.
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{fcc.png}
-\caption{Initial placement of particles in FCC latice }
+\caption{Initial placement of particles in FCC lattice }
 \label{fig:init_place}
 \end{figure}
 
@@ -246,21 +242,21 @@ The correlation function for the gas phase are showed in figure \ref{fig:gas_cor
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{Correlation_rho03_T3_rm35_2.png}
-\caption{Spatial correlation function for $\rho =0.3$ and T=3 thus system is in the gas phase}
+\caption{Spatial correlation function for $\rho=0.3$ and $T=3$ thus system is in the gas phase}
 \label{fig:gas_cor}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{Correlation_rho088_T1_rm35_2.png}
-\caption{Spatial correlation function for $\rho =0.88$ and T=1 thus system is in the liquid phase}
+\caption{Spatial correlation function for $\rho=0.88$ and $T=1$ thus system is in the liquid phase}
 \label{fig:liq_cor}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{Correlation_rho18_T05_rm35_2.png}
-\caption{Spatial correlation function for $\rho =1.8$ and T=0.5 and the structure shows that this is a solid}
+\caption{Spatial correlation function for $\rho=1.8$ and $T=0.5$ and the structure shows that this is a solid}
 \label{fig:solid_cor}
 \end{figure}
 
@@ -275,15 +271,31 @@ We can further investigate the phase of the system by generate isothermal lines 
 \label{fig:isothermals}
 \end{figure}
 
+\section{Diffusion}
+
+We have also investigated the diffusion of particles in the system.
+By keeping track of the displacement of each particle $x = |\mathbf{r}-\mathbf{r_0}|$ we can determine the diffusion coefficient $D$ using eq. \ref{eq:diffusion}. The result for different temperatures can be seen in fig. \ref{fig:diffusion}. It is clear that the diffusion coefficient of the gas is by far the largest, since the particles can move while barely interacting with others (ideal gas limit). On the other hand, the diffusion coefficient of the solid is practically nonexistent, since in that case the particles are bound to their position in the lattice.
+
+\begin{equation}\label{eq:diffusion}
+	<x^2> = D t
+\end{equation}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{diffusion.png}
+\caption{Mean-square diffusion distance $<x^2>$ as function of time for a gas (blue), liquid (green) and solid (red). The slope is the diffusion coefficient $D$.}
+\label{fig:diffusion}
+\end{figure}
+
 \section{Error analysis}
 
 There were different methods used to determine the error in the pressure and the heat capacity. Firstly the error in the pressure was determined by measuring the pressure over each 100 steps over the course of one simulation after equilibration, and thereafter the variance in these values were used as the error for the pressure. Secondly to determine the error in the heat capacity the simulation was ran 5 times and for each of these 5 times the heat capacity was calculated and the variance in these values were used as the error for the heat capacity.
 
 \chapter{Conclusion}
 
-By comparing our results with other simulations performed that has been tested experimentaly it can be concluded that this molecular dynamics simulation yields the desired results for argon. As shown in table \ref{table:results} these results corresponds to values that was given by J.Thijsen in [\cite{thijssen} in table 8.1. We mostly compared the compression factor of our simulation.
+By comparing our results with other simulations performed that has been tested experimentally it can be concluded that this molecular dynamics simulation yields the desired results for argon. As shown in table \ref{table:results} these results corresponds to values that was given by \cite{thijssen} (table 8.1). We mostly compared the compression factor of our simulation.
 
-Further we controlled the initial placement and the periodic boundary condition of the particles with an animation plot. Then we verified that we were measuring in the microcanonical ensemble by verifying that the total energy remained constant after the system was equilibrised. Hereafter the argon simulation was simulated in the gas, solid and liquid phase and this was checked by studying the correlation function of the system. And as was expected the correlation function of a solid and liquid appeared structured whereas the function of the gas had no structure to it. Moreover the heat capacity results were in accordance 
+Further we controlled the initial placement and the periodic boundary condition of the particles with an animation plot. Then we verified that we were measuring in the microcanonical ensemble by verifying that the total energy remained constant after the system was equilibrated. Hereafter the argon simulation was simulated in the gas, solid and liquid phase and this was checked by studying the correlation function of the system. And as was expected the correlation function of a solid and liquid appeared structured whereas the function of the gas had no structure to it. Moreover the heat capacity results were in accordance 
 with previously performed experiments by Lebowitz \cite{lebowitz1967}. 
 
 Also we studied isothermal lines in a PV diagram and compared these with the spatial correlation function to study phase "transitions" from a PV diagram. " sebas moet voegen" "zet eventueel problemen met isothermen op".
