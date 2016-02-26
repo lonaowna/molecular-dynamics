@@ -1,13 +1,14 @@
 import math
 import numpy
 import time
-from numba import jit
 import anim_md
+from numba import jit
 numpy.set_printoptions(threshold=numpy.nan)
 
+INTERACTION_INTERVAL = 15
 DO_THERMOSTAT_DURING_INIT = True
 DO_THERMOSTAT_AFTER_INIT = True
-THERMOSTAT_INTERVAL = 10
+THERMOSTAT_INTERVAL = 1
 DO_CORRELATION = False
 
 def print_particles(x, v, a, N):
@@ -67,9 +68,6 @@ def lennard_jones(r):
     Vij = 4 * ( (1/r12) - (1/r6) )
     return Fij, Vij
 
-def lennard_jones_force_length(r):
-    return 4 * ( 12*(1/r**13) - 6*(1/r**7) )
-
 @jit
 def closest_image_distance(xi,xj,L):
     # find which image particle is closest
@@ -80,14 +78,15 @@ def closest_image_distance(xi,xj,L):
 
 @jit
 def interacting_particles(x, N, L, r_m):
+    r_m2 = r_m*r_m
     r_dis = numpy.zeros((N,N))
 
     for i in range(0, N):
         for j in range(i+1, N):
             r = closest_image_distance(x[:,i],x[:,j],L)
-            rij = numpy.sqrt(numpy.sum(r*r))
+            rij2 = numpy.sum(r*r)
 
-            if rij < r_m:
+            if rij2 < r_m2:
                 r_dis[i,j] = 1
                 r_dis[j,i] = 1
 
@@ -97,6 +96,7 @@ def interacting_particles(x, N, L, r_m):
 def update(N, L, x, v, a, dt, n_t, r_all, do_pressure):
     Vtot = 0
     Ktot = 0
+    P = 0
 
     v += 0.5*a*dt
     dx = v*dt
@@ -135,31 +135,19 @@ def update(N, L, x, v, a, dt, n_t, r_all, do_pressure):
     for i in range(0, N):
         c = numpy.rint(x[:,i]/L)
         x[:,i] -= c*L
-        #calculate kinetic energy
+        # calculate kinetic energy
         Ktot += 0.5*numpy.sum(v[:,i]*v[:,i])
 
     Etot = Vtot + Ktot
     v_sum = numpy.sum(v,1)
 
-    return x,v,a,Vtot,Ktot,Etot,v_sum,dx, sum1
+    return Vtot, Ktot, Etot, v_sum, dx, sum1
 
 @jit
 def Cv(K_vec, N):
     Kvar = numpy.var(K_vec)
     Kmean2 = (K_vec.mean())**2
     return 3*N*Kmean2/(2*Kmean2-3*N*Kvar)
-
-@jit
-def pressure(N, L, T, sum1, rho):
-    k = numpy.nonzero(sum1)[0]
-    P_ar = numpy.zeros(len(k))
-    i = 0 
-    for j in k:
-        P_ar[i] = 1 - sum1[j]/(3*N*T) - (2*math.pi*rho/(3*T))*(8*(L/2)**(-3)-48/9*(L/2)**(-9))#this is actually the compressibility factor
-        i += 1
-    P_var = numpy.std(P_ar)
-    P_comp = numpy.mean(P_ar)
-    return P_comp, P_var
 
 @jit
 def spacial_corr(x, N, L, bin_size, bin_count):
@@ -173,65 +161,65 @@ def spacial_corr(x, N, L, bin_size, bin_count):
             bins[math.floor(r_len/bin_size)] += 1
     return bins
 
-def run(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, interaction_interval, bin_count, bin_size, r_all, n_pres):
+def run(N, L, T, rho, x, v, a, dt, n_t, r_v, r_m, n_iter, n_iter_init, bin_count, bin_size, r_all):
     bins = numpy.zeros(bin_count)
     Vtot = numpy.zeros(n_iter)
     Ktot = numpy.zeros(n_iter)
     Etot = numpy.zeros(n_iter)
     v_sum = numpy.zeros(n_iter)
     Tcurrent = numpy.zeros(n_iter)
-    meandiff2 = numpy.zeros(n_iter)
+    diff2_mean = numpy.zeros(n_iter)
     totdiff = numpy.zeros([3,N])
-    sum1 = numpy.zeros(n_iter)
     i = 0
-    i_bin = 0
+    times_binned = 0
     while i < n_iter:
         print("iteration",i,"of",n_iter)
-        if i%interaction_interval == 0:
+        if i%INTERACTION_INTERVAL == 0:
             t = time.time()
             r_all = interacting_particles(x, N, L, r_m)
             elapsed = time.time() - t
             print("finding interacting particle pairs took",elapsed)
         t = time.time()
-        do_pressure = (i%n_pres == 0 and i > n_iter_init)
-        x, v, a, Vtot[i], Ktot[i], Etot[i], v_sum_vec, dx, sum1[i] = update(N, L, x, v, a, dt, n_t, r_all, do_pressure)
+        is_final_iter = (i==n_iter-1)
+        Vtot[i], Ktot[i], Etot[i], v_sum_vec, dx, sum1 = update(N, L, x, v, a, dt, n_t, r_all, is_final_iter)
+        if is_final_iter:
+            Pfinal = 1 - sum1/(3*N*T) - (2*math.pi*rho/(3*T))*(8*(L/2)**(-3)-48/9*(L/2)**(-9))
         elapsed = time.time() - t
         print("update took",elapsed)
         v_sum[i] = numpy.sqrt(numpy.sum(v_sum_vec*v_sum_vec))/N
         Tcurrent[i] = Ktot[i]*2/(3*N)
+        diff2_mean[i] = 0
         if i < n_iter_init:
             if DO_THERMOSTAT_DURING_INIT:
                 if i%THERMOSTAT_INTERVAL == 0:
-                    #thermostat: scale velocity
+                    # thermostat: scale velocity
                     labda = numpy.sqrt((N-1)*(3/2)*T/Ktot[i])
                     v *= labda
         else:
-            #diffusion length
+            # diffusion length
             totdiff += dx
-            totdifflen = numpy.sqrt(numpy.sum(totdiff*totdiff,0))
-            meandiff2[i] = (totdifflen*totdifflen).mean()
+            diff2_mean[i] = numpy.sum(totdiff*totdiff,0).mean()
 
             if DO_THERMOSTAT_AFTER_INIT:
                 if i%THERMOSTAT_INTERVAL == 0:
-                    #thermostat: scale velocity
+                    # thermostat: scale velocity
                     labda = numpy.sqrt((N-1)*(3/2)*T/Ktot[i])
                     v *= labda
             if DO_CORRELATION:
-                #correlation bins
+                # correlation bins
                 new_bins = spacial_corr(x,N,L,bin_size,bin_count)
                 for j in range(0,bin_count):
                     bins[j] += new_bins[j]
-                i_bin += 1#amount of times binned to normalize
+                times_binned += 1
         i += 1
 
     if DO_CORRELATION:
         for j in range(0,bin_count):
             bins[j] *= L*L*L/(N*(N-1))/(4*math.pi*((j+0.5)*bin_size)**2*bin_size)
-        bins /= i_bin#divided by amount of times binned
-    P_beta, P_var = pressure(N, L, T, sum1, rho)
-    CvN = Cv(Ktot[n_iter_init:n_iter],N)/N
+        bins /= times_binned # divided by amount of times binned to normalize
+    Cv_mean = Cv(Ktot[n_iter_init:n_iter],N)/N
 
-    return CvN, meandiff2, P_beta, bins, Vtot, Ktot, Etot, Tcurrent, v_sum, P_var
+    return Cv_mean, diff2_mean, Pfinal, bins, Vtot, Ktot, Etot, Tcurrent, v_sum
 
 #####
 # The following will only run if this file is directly executed (not imported)

@@ -260,14 +260,14 @@ The correlation function for the gas phase are showed in figure \ref{fig:gas_cor
 \label{fig:solid_cor}
 \end{figure}
 
-\section{Isothermals}
+\section{Compressibility and isothermals}
 
-We can further investigate the phase of the system by generate isothermal lines in a $P$-$v$ plot. This is done by measuring the pressure while changing the density of the system and forcing a constant temperature using the thermostat. The resulting isothermals can be seen in figure \ref{fig:isothermals}. It is clear that for higher temperatures, the line becomes smoother and the dip disappears. The dip indicates that the system is undergoing a phase transition.
+We can further investigate the phase of the system by generate isothermal lines in a $P$-$v$ plot. This is done by measuring the pressure while changing the density of the system and forcing a constant temperature using the thermostat. The resulting isothermals can be seen in figure \ref{fig:isothermals}. It is clear that for higher temperatures, the line becomes smoother and the kink disappears. Unfortunately we weren't able to identify any phase transitions.
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{Isothermen.png}
-\caption{Isothermals for different temperatures. Note the absence of the dip for higher temperatures, indicating that the system is in gas phase.}
+\caption{Isothermals for different temperatures. Note the absence of the kink for higher temperatures.}
 \label{fig:isothermals}
 \end{figure}
 
@@ -293,13 +293,13 @@ There were different methods used to determine the error in the pressure and the
 
 \chapter{Conclusion}
 
-By comparing our results with other simulations performed that has been tested experimentally it can be concluded that this molecular dynamics simulation yields the desired results for argon. As shown in table \ref{table:results} these results corresponds to values that was given by \cite{thijssen} (table 8.1). We mostly compared the compression factor of our simulation.
+By comparing our results with other simulations performed that has been tested experimentally it can be concluded that this molecular dynamics simulation yields the desired results for argon. As shown in table \ref{table:results} these results corresponds to values that was given by \cite{thijssen} (table 8.1).
 
-Further we controlled the initial placement and the periodic boundary condition of the particles with an animation plot. Then we verified that we were measuring in the microcanonical ensemble by verifying that the total energy remained constant after the system was equilibrated. Hereafter the argon simulation was simulated in the gas, solid and liquid phase and this was checked by studying the correlation function of the system. And as was expected the correlation function of a solid and liquid appeared structured whereas the function of the gas had no structure to it. Moreover the heat capacity results were in accordance 
-with previously performed experiments by Lebowitz \cite{lebowitz1967}. 
+Further we verified the initial placement and the periodic boundary condition of the particles with an animated plot. Then we verified that we were measuring in the microcanonical ensemble by verifying that the total energy remained constant after the system was equilibrated. Hereafter the argon simulation was simulated in the gas, solid and liquid phase and this was checked by studying the correlation function of the system. And as was expected the correlation function of a solid and liquid appeared structured whereas the function of the gas had no structure to it.
+This was also confirmed by the difference in diffusion constant for the different phases.
+Moreover the heat capacity results were in accordance with previously performed experiments by Lebowitz \cite{lebowitz1967}. 
 
-Also we studied isothermal lines in a PV diagram and compared these with the spatial correlation function to study phase "transitions" from a PV diagram. " sebas moet voegen" "zet eventueel problemen met isothermen op".
-
+We have also studied isothermal lines in a $PV$ diagram and compared these with the spatial correlation function to study phase transitions. The isothermal lines show expected behavior although we were unable to identify the phase transitions as clearly as with the correlation.
 
 \newpage
 \begin{thebibliography}{9}
