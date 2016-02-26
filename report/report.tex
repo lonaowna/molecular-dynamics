@@ -42,9 +42,9 @@
 \newpage
 
 \begin{abstract}
-We have created a molecular dynamics simulation to investigate the behavior of a homogeneous system of e.g. argon particles. In our simulation, the particles interact with a Lennard-Jones potential. The velocity Verlet algorithm is used to integrate the equations of motion and update the position and velocity of the particles. The initial conditions consist of the particles spaced out evenly in a FCC lattice, with an initial velocity drawn from the Maxwell-Boltzman distribution as a function of the initial temperature. We use periodic boundary conditions to only simulate the interaction between argon atoms.
+We have created a molecular dynamics simulation to investigate the behavior of a homogeneous system of 864 argon particles. The particles in the simulation interact through a Lennard-Jones potential. And to integrate the equations of motion and update the position and velocity of the particles the velocity Verlet algorithm is used. Concerning the initial condition of the particles these were spaced out evenly in a FCC-lattice, with an initial velocity drawn from the Maxwell-Boltzman distribution as a function of the initial temperature. And as to the boundary of the system a periodic boundary condition was used.
 
-After verifying that all basic laws such as energy conservation hold, we have investigated multiple properties. We have determined the specific heat of the system at multiple densities and our results were in accordance with previous simulations and experiments. Besides that we have also investigated the phase of our system at various temperatures and densities by computing the spacial correlation of the particles and looking at the compressibility of the system. The spacial correlation clearly shows the difference between a gas, fluid or solid phase. This was also noticeable when looking at isothermal lines in a compression diagram.
+After verifying that all basic laws such as energy conservation hold, we have investigated multiple properties. The pressurre and the specific heat of the system was determined at multiple densities and these results were in accordance with simulated and experimental values obtained by others for example Lebowitz \cite{lebowitz1967}. Besides that we have also investigated the phase of the system at various temperatures and densities by computing the spacial correlation of the particles and looking at the compressibility of the system. The spacial correlation clearly shows the difference between a gas, fluid or solid phase. This was also noticeable when looking at isothermal lines in a compression diagram.
 \end{abstract}
 
 \newpage
@@ -64,7 +64,9 @@ After verifying that all basic laws such as energy conservation hold, we have in
 
 \chapter{Introduction}
 
-Using statistical physics, a lot of properties of a system can be derived by looking at the behavior of many particles. Because direct experimentation is impossible, it is an ideal subject to simulate in a computer program. Starting out with the right inter-particle potential, one can simulate the interaction and movement of the particles. Combined with the right initial and boundary conditions, it is possible to determine some thermodynamical properties of a material like the temperature, spacial correlation, pressure and diffusion.
+The theory of statistical physics can describe certain thermodynamical properties of a system such as temperature, spacial correlation, pressure and diffusion. Hence this paper describes how using theories of statistical physics a molecular dynamics simulation is build to be able to study these properties of argon using computer simulation. This simulation has been build with the aim of achieving a working simulation whereafter the simulated values can be compared with others simulation and with attained experimental values.
+
+To build the simulation the following points were adressed: How does the particles interact with each other, how to move the particles around and what type boundary conditions to use for the simulation. The interaction of the particles was simulated using a Lennard-Jones potential and to move the particles around the Verlet velocity algorithm was used and as boundary condition a periodic boundary condition was used. After these propeties were implemented the pressure and the heat capacity was studied at certain densities and temperature, other results that are shown are the spatial correlation function, diffusion constant and some isothermals in a PV-diagram.
 
 \chapter{Theory}
 
@@ -231,7 +233,7 @@ To control that we had a microcanonical ensemble we verified that the total ener
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{All_rho088_T1_rm35_2.png}
-\caption{The potential energy (blue) and kinetic energy (green) both fluctuate, but in opposing direction, leading to a constant total energy (red).}
+\caption{The potential energy (blue) and kinetic energy (green) both fluctuate in opposing direction, leading to a constant total energy (red).}
 \label{fig:all_rho}
 \end{figure}
 
@@ -293,11 +295,9 @@ There were different methods used to determine the error in the pressure and the
 
 \chapter{Conclusion}
 
-By comparing our results with other simulations performed that has been tested experimentally it can be concluded that this molecular dynamics simulation yields the desired results for argon. As shown in table \ref{table:results} these results corresponds to values that was given by \cite{thijssen} (table 8.1).
+By comparing our results with other simulations and experimental values we concluded that this molecular dynamics simulation yields the desired results for argon. As shown in table \ref{table:results} these results corresponds to values that was given by J.Thijsen \cite{thijssen} (table 8.1) from his book.
 
-Further we verified the initial placement and the periodic boundary condition of the particles with an animated plot. Then we verified that we were measuring in the microcanonical ensemble by verifying that the total energy remained constant after the system was equilibrated. Hereafter the argon simulation was simulated in the gas, solid and liquid phase and this was checked by studying the correlation function of the system. And as was expected the correlation function of a solid and liquid appeared structured whereas the function of the gas had no structure to it.
-This was also confirmed by the difference in diffusion constant for the different phases.
-Moreover the heat capacity results were in accordance with previously performed experiments by Lebowitz \cite{lebowitz1967}. 
+Further we verified the initial placement and the periodic boundary condition of the particles with an animated plot. Then we verified that the measurements were being performed in the microcanonical ensemble by verifying that the total energy remained constant after the system was equilibrated. Hereafter the argon simulation was simulated in the gas, solid and liquid phase and this was checked by studying the correlation function of the system. And as was expected the correlation function of a solid and liquid appeared structured whereas the function of the gas had no structure to it. This was also confirmed by the difference in diffusion constant for the different phases. Moreover the heat capacity results were in accordance with previously performed experiments by Lebowitz \cite{lebowitz1967}. 
 
 We have also studied isothermal lines in a $PV$ diagram and compared these with the spatial correlation function to study phase transitions. The isothermal lines show expected behavior although we were unable to identify the phase transitions as clearly as with the correlation.
 
