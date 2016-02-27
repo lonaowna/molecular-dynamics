@@ -64,9 +64,9 @@ After verifying that all basic laws such as energy conservation hold, we have in
 
 \chapter{Introduction}
 
-The theory of statistical physics can describe certain thermodynamical properties of a system such as temperature, spacial correlation, pressure and diffusion. Hence this paper describes how using theories of statistical physics a molecular dynamics simulation is build to be able to study these properties of argon using computer simulation. This simulation has been build with the aim of achieving a working simulation whereafter the simulated values can be compared with others simulation and with attained experimental values.
+The theory of statistical physics can describe certain thermodynamical properties of a system such as temperature, spacial correlation, pressure and diffusion. Hence this paper describes how using theories of statistical physics a molecular dynamics simulation is build to study the thermodynamical properties of argon using computer simulation. The simulation has been build with the aim of achieving a working simulation whereafter the simulated values can be compared with other simulations and with attained experimental values.
 
-To build the simulation the following points were adressed: How does the particles interact with each other, how to move the particles around and what type boundary conditions to use for the simulation. The interaction of the particles was simulated using a Lennard-Jones potential and to move the particles around the Verlet velocity algorithm was used and as boundary condition a periodic boundary condition was used. After these propeties were implemented the pressure and the heat capacity was studied at certain densities and temperature, other results that are shown are the spatial correlation function, diffusion constant and some isothermals in a PV-diagram.
+To build the simulation the following points were adressed: How does the particles interact with each other, how to move the particles around and what type of boundary conditions to use for the simulation. The interaction between the 864 particles was simulated using a Lennard-Jones potential. To move the particles around the Verlet velocity algorithm was used and as boundary a periodic boundary condition was used. After these propeties were implemented the pressure and the heat capacity was studied at certain densities and temperature. Other results that are shown are the spatial correlation function, diffusion constant and some isothermals in a PV-diagram.
 
 \chapter{Theory}
 
@@ -199,7 +199,9 @@ The correlation function $g(\Delta r)$ is computed by counting the atoms in a sp
 
 \chapter{Results}
 
-To verify the correctness of our simulation program, we have simulated using the same parameters that have been used by others such as \cite{thijssen} (table 8.1). The results that have been achieved with our simulation are given in table \ref{table:results}. They are in accordance with results from others. Thus we assume that the parameters of the simulation are correct.
+To verify the correctness of our simulation program, we have simulated using the same parameters that have been used by others such as J.Thijssen \cite{thijssen} (table 8.1). All our simulations ran with 864 particles and a potential cut-off distance of r=3,5 and a time step of dt=0.004. Furthermore all the results stated are in the reduced units with respect to the following properties of argon: all lengths stated are in units of ($\sigma =3.405\AA$) and energies in units of ($\epsilon =119.8^{\circ}k_b$) and time in units of ($\tau =2.15\cdot 10^{-12}s$)
+
+The results that have been achieved with our simulation are given in table \ref{table:results} and further results are stated more on in this section. These results are in accordance with results from others. Thus we assume that the parameters of the simulation are correct.
 \begin{table}[h]
 \caption{Simulation results}\label{table:results}
 \begin{center}
@@ -215,12 +217,12 @@ To verify the correctness of our simulation program, we have simulated using the
 \end{center}
 \end{table}
 
-Also the initial placement of the particles were visualized to assure that the particles were placed correctly in the FCC lattice which is shown in figure \ref{fig:init_place}. This visual aid was also used to spot any discrepancies in the movement of the particles for example at periodic boundaries.
+Also the initial placement of the particles were visualized to assure that the particles were placed correctly in the FCC lattice which is shown in figure \ref{fig:init_place}. It should be noted that the plot shows a 108 particles but the simulations ran at 864 particles. This visual aid was also used to spot any discrepancies in the movement of the particles for example at periodic boundaries.
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{fcc.png}
-\caption{Initial placement of particles in FCC lattice }
+\caption{Initial placement of particles 108 particles in FCC lattice }
 \label{fig:init_place}
 \end{figure}
 
@@ -228,7 +230,7 @@ Further some simulations were made to study argon in the the gas, liquid and sol
 
 \section{Microcanonical ensemble}
 
-To control that we had a microcanonical ensemble we verified that the total energy of the system is constant after the equilibration. This is indeed seen in figure \ref{fig:all_rho}.
+To control that we had a microcanonical ensemble we verified that the total energy of the system remained constant after equilibration. This is indeed seen in figure \ref{fig:all_rho}.
 
 \begin{figure}[H]
 \centering
@@ -295,7 +297,7 @@ There were different methods used to determine the error in the pressure and the
 
 \chapter{Conclusion}
 
-By comparing our results with other simulations and experimental values we concluded that this molecular dynamics simulation yields the desired results for argon. As shown in table \ref{table:results} these results corresponds to values that was given by J.Thijsen \cite{thijssen} (table 8.1) from his book.
+By comparing our results with other simulations and experimental values we concluded that the molecular dynamics simulation yields the desired results for argon. As shown in table \ref{table:results} these results corresponds to values that was given by J.Thijsen \cite{thijssen} (table 8.1) from his book.
 
 Further we verified the initial placement and the periodic boundary condition of the particles with an animated plot. Then we verified that the measurements were being performed in the microcanonical ensemble by verifying that the total energy remained constant after the system was equilibrated. Hereafter the argon simulation was simulated in the gas, solid and liquid phase and this was checked by studying the correlation function of the system. And as was expected the correlation function of a solid and liquid appeared structured whereas the function of the gas had no structure to it. This was also confirmed by the difference in diffusion constant for the different phases. Moreover the heat capacity results were in accordance with previously performed experiments by Lebowitz \cite{lebowitz1967}. 
 
